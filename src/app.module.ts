@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CommonModule } from './common/common.module';
+import { PackageTypesModule } from './package-types/package-types.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { CommonModule } from './common/common.module';
       rootPath: join(__dirname,'..','public'),
     }),
     UsersModule,
-    CommonModule
+    CommonModule,
+    PackageTypesModule
   ],
   controllers: [],
   providers: [],

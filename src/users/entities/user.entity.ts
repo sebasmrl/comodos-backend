@@ -27,7 +27,7 @@ export class User {
     @Column({ type:'int', default:1})
     tickets: number;
 
-    @Column({ type: 'date', default: new Date()})//.toLocaleDateString('es-CO', { year: "numeric", month:'2-digit', day:'2-digit'}) })
+    @Column({ type: 'timestamp', default: new Date()})//.toLocaleDateString('es-CO', { year: "numeric", month:'2-digit', day:'2-digit'}) })
     createdAt: Date;
 
     @Column({type:'bool', default:true})

@@ -57,6 +57,10 @@ export class UsersService {
 
     await this.findOne(uuid); //lanza excepcionn en caso de que no encuentre
     try {
+
+      if(updateUserDto.password) 
+        updateUserDto.password = bcrypt.hashSync(updateUserDto?.password, 10);
+
       const userBase =  await this.userRepository.preload({id:uuid, ...updateUserDto});
       await this.userRepository.update({ id:uuid}, userBase);
 
@@ -107,7 +111,10 @@ export class UsersService {
 
 
   async findAll(paginationDto: PaginationDto) {
-    const { offset = 0, limit = 10 } = paginationDto;
+    const { offset = 0, limit = 10, activeEntries } = paginationDto;
+
+    let condition = (activeEntries == undefined)  ? {}  : { isActive: activeEntries}
+
     try {
       const users = await this.userRepository.find({
         skip: offset,
@@ -123,6 +130,7 @@ export class UsersService {
           id: true,
           isActive: true,
         },
+        where: {...condition},
         loadRelationIds: true
       })
       return users;

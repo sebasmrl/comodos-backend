@@ -36,5 +36,6 @@ export class CreateUserDto {
         tickets: number;
         createdAt: Date;
         isActive:boolean
+        profilePhoto:string
     */
 }
