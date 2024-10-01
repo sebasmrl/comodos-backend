@@ -39,6 +39,6 @@ export class CreatePackageTypeDto {
     @IsOptional()
     @IsInt()
     @Min(2024)
-    validYear?:number = new Date().getFullYear()
+    since?:number = new Date().getFullYear()
 
 }

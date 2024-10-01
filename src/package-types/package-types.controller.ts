@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { PaginationDto } from './../common/dto/pagination.dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { PackageTypesService } from './package-types.service';
 import { CreatePackageTypeDto } from './dto/create-package-type.dto';
 import { UpdatePackageTypeDto } from './dto/update-package-type.dto';
@@ -13,22 +14,22 @@ export class PackageTypesController {
   }
 
   @Get()
-  findAll() {
-    return this.packageTypesService.findAll();
+  findAll(paginationDto:PaginationDto) {
+    return this.packageTypesService.findAll(paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.packageTypesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePackageTypeDto: UpdatePackageTypeDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updatePackageTypeDto: UpdatePackageTypeDto) {
     return this.packageTypesService.update(id, updatePackageTypeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.packageTypesService.remove(id);
+  deactivate(@Param('id', ParseUUIDPipe) id: string) {
+    return this.packageTypesService.deactivate(id);
   }
 }

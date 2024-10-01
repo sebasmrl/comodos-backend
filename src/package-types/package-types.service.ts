@@ -1,3 +1,4 @@
+import { PaginationDto } from './../common/dto/pagination.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { CreatePackageTypeDto } from './dto/create-package-type.dto';
 import { UpdatePackageTypeDto } from './dto/update-package-type.dto';
@@ -18,7 +19,6 @@ export class PackageTypesService {
 
 
   async create(createPackageTypeDto: CreatePackageTypeDto) {
-
     
     try {
       const packageType = this.packageTypeRepository.create(createPackageTypeDto);
@@ -29,23 +29,67 @@ export class PackageTypesService {
     } catch (error) {
       handleDbErrors(this.logger, error)
     }
-
-    return 'This action adds a new packageType';
   }
 
-  findAll() {
-    return `This action returns all packageTypes`;
+  async findAll(paginationDto:PaginationDto) {
+    const { offset = 0, limit = 10, activeEntries } = paginationDto;
+    let condition = (activeEntries == undefined)  ? {}  : { isActive: activeEntries}
+
+    try {
+      const packageTypes = await this.packageTypeRepository.find({
+        select: {
+          sku:false,
+          id:true,
+          name:true,
+          price:true,
+          tickets:true,
+          discount:true,
+          isActive:true,
+          createdAt:true,
+          since:true, 
+          currencyCode:true,
+          updatedAt:true
+        },
+        where:{...condition},
+        take:limit,
+        skip:offset
+      })
+
+      return packageTypes;
+    } catch (error) {
+      handleDbErrors(this.logger, error)
+    }
+
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} packageType`;
+  async findOne(id: string) {
+    try {
+      const packageType = await this.packageTypeRepository.findOneBy({ id })
+      const { sku, ...data} = packageType;
+      return data;
+    } catch (error) {
+      handleDbErrors(this.logger, error)
+    }
   }
 
-  update(id: string, updatePackageTypeDto: UpdatePackageTypeDto) {
-    return `This action updates a #${id} packageType`;
+  async  update(id: string, updatePackageTypeDto: UpdatePackageTypeDto) {
+    try {
+      const packageType = await this.packageTypeRepository.preload({id, ...updatePackageTypeDto});
+      await this.packageTypeRepository.update({id}, packageType);
+      const {sku, ...data } = packageType;
+      return data;
+    } catch (error) {
+      
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} packageType`;
+  async deactivate(id: string) {
+    try {
+      await this.update(id, {isActive:false})
+      return { id, isActive:false }
+    } catch (error) {
+      handleDbErrors(this.logger, error)
+    }
+    
   }
 }

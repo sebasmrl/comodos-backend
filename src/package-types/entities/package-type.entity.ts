@@ -31,7 +31,7 @@ export class PackageType {
     isActive: boolean;
 
     @Column({type:'int', default: new Date().getFullYear()})
-    validYear:number
+    since:number
 
     @Column({ type: 'timestamp', default: new Date()}) //date  // time
     createdAt: Date;
@@ -40,7 +40,7 @@ export class PackageType {
     updatedAt: Date;
 
     //------------------------ Relations ---------------------------
-    //TODO: relacion con Packages OneToMany
+    //TODO: relacion con Packages OneToMany - sin traer sus registros relacionados
 
 
 
@@ -51,13 +51,13 @@ export class PackageType {
     @BeforeInsert()
     beforePackageCreated():void{
         this.name= StringModifiers.toUpperCamelCase(this.name)
-        this.sku = `${StringModifiers.toLowerCase(this.name, '_')}_${this.validYear}`;
+        this.sku = `${StringModifiers.toLowerCase(this.name, '_')}_${this.since}`;
     }
 
     @BeforeUpdate()
     beforePackageUpdated():void {
         this.updatedAt = new Date()
-        this.sku = `${StringModifiers.toLowerCase(this.name, '_')}_${this.validYear}`;
+        this.sku = `${StringModifiers.toLowerCase(this.name, '_')}_${this.since}`;
     }
 
 }
