@@ -1,6 +1,7 @@
 import { Currency } from "src/common/constants/currency.constant";
 import { StringModifiers } from "src/common/helpers/string-modifiers.helper";
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Package } from "src/packages/entities/package.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name:'package_types'})
 export class PackageType {
@@ -40,8 +41,13 @@ export class PackageType {
     updatedAt: Date;
 
     //------------------------ Relations ---------------------------
-    //TODO: relacion con Packages OneToMany - sin traer sus registros relacionados
-
+    //relacion con Packages OneToMany - NO traer sus registros relacionados
+    @OneToMany(
+        ()=>Package,
+        (pack)=> pack.packageType,
+        { cascade:true }
+    )
+    packages: Package[];
 
 
 

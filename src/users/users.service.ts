@@ -46,7 +46,12 @@ export class UsersService {
 
   async findOne(uuid: string) {
     try {
-      const { password,id, ...data} =  await this.userRepository.findOneBy({id:uuid})
+      const { password,id, ...data} =  await this.userRepository.findOne({
+        where: { id:uuid },
+        relations:{
+          packages:true
+        }
+      })
       return data;
     } catch (error) {
       handleDbErrors(this.logger, error)
@@ -131,7 +136,10 @@ export class UsersService {
           isActive: true,
         },
         where: {...condition},
-        loadRelationIds: true
+        //loadRelationIds: true,
+        relations:{
+          packages:true
+        }
       })
       return users;
     } catch (error) {

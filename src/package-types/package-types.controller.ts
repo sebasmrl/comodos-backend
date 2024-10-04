@@ -1,5 +1,5 @@
 import { PaginationDto } from './../common/dto/pagination.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 import { PackageTypesService } from './package-types.service';
 import { CreatePackageTypeDto } from './dto/create-package-type.dto';
 import { UpdatePackageTypeDto } from './dto/update-package-type.dto';
@@ -14,7 +14,7 @@ export class PackageTypesController {
   }
 
   @Get()
-  findAll(paginationDto:PaginationDto) {
+  findAll(@Query() paginationDto:PaginationDto) {
     return this.packageTypesService.findAll(paginationDto);
   }
 

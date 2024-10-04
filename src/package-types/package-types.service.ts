@@ -1,11 +1,12 @@
 import { PaginationDto } from './../common/dto/pagination.dto';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Query } from '@nestjs/common';
 import { CreatePackageTypeDto } from './dto/create-package-type.dto';
 import { UpdatePackageTypeDto } from './dto/update-package-type.dto';
 import { handleDbErrors } from 'src/common/helpers/db-error.handler';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PackageType } from './entities/package-type.entity';
 import { DataSource, Repository } from 'typeorm';
+
 
 @Injectable()
 export class PackageTypesService {
@@ -31,8 +32,10 @@ export class PackageTypesService {
     }
   }
 
-  async findAll(paginationDto:PaginationDto) {
+  async findAll( paginationDto:PaginationDto) {
+    
     const { offset = 0, limit = 10, activeEntries } = paginationDto;
+    console.log(offset)
     let condition = (activeEntries == undefined)  ? {}  : { isActive: activeEntries}
 
     try {

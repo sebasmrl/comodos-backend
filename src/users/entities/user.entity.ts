@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Package } from "src/packages/entities/package.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name:'users'})
 export class User {
@@ -37,8 +38,12 @@ export class User {
     profilePhoto: string;
 
     //------------------Relations------------------
-    //!TODO  OneToMany
-    //packages: Package[]
+    @OneToMany(
+        ()=>Package,
+        (pack)=>pack.user,
+        { eager:true}
+    )
+    packages: Package[]
 
     //!TODO OneToMany
     //ads: Ad[]

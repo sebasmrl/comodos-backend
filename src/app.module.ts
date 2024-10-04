@@ -6,6 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CommonModule } from './common/common.module';
 import { PackageTypesModule } from './package-types/package-types.module';
+import { PackagesModule } from './packages/packages.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { PackageTypesModule } from './package-types/package-types.module';
     }),
     UsersModule,
     CommonModule,
-    PackageTypesModule
+    PackageTypesModule,
+    PackagesModule
   ],
   controllers: [],
   providers: [],
