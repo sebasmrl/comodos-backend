@@ -5,6 +5,10 @@ export function handlerDbError(e:any, logger:Logger){
         logger.error(e.detail) 
         throw new BadRequestException(e.detail); 
       }
+      if(e.code =='22003'){
+        logger.error(e.message) 
+          throw new BadRequestException(e.message); 
+      }
       logger.error(e.message+' || '+e.code)
       throw new InternalServerErrorException("Error desconocido, verifica los logs de tu servidor");
 }

@@ -9,8 +9,8 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id:string;
 
-    @Column({type:'integer', unique:true})
-    dni:number;
+    @Column({type:'bigint', unique:true})
+    dni:number; 
 
     @Column({type:'text', unique:true})
     email:string;
@@ -33,10 +33,10 @@ export class User {
     @Column({type:'text'})
     nationality:string;
 
-    @Column({type:'integer'})
+    @Column({type:'bigint'})
     phone:number;
 
-    @Column({name:'phone_code',type:'integer'})
+    @Column({name:'phone_code',type:'bigint'})
     phoneCode:number;
 
     @Column({name:'last_connection',type:'timestamptz', default:  new Date()})

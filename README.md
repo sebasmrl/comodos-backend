@@ -33,7 +33,11 @@ npm i @nestjs/config
 npm i class-validator class-transformer
 npm install --save @nestjs/typeorm typeorm pg
 npm i bcrypt
+npm i @nestjs/passport passport @nestjs/jwt passport-jwt 
+npm i --save-dev @types/passport-jwt
 
+# usar este comando para generar claves de forma automatica
+openssl rand -base64 64
 ```
 
 

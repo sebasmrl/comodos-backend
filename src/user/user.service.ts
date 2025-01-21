@@ -27,8 +27,8 @@ export class UserService {
     if (!user) throw new InternalServerErrorException('Error al intentar crear modelo de usuario');
 
     try {
-      const newUser = await this.userRepository.save(user);
-      return newUser;
+      const {password, ...newUserData} = await this.userRepository.save(user);
+      return newUserData;
     } catch (e) {
       handlerDbError(e, this.logger)
     }
@@ -58,7 +58,7 @@ export class UserService {
   }
 
 
-  async findOne(id: string) {
+  async findOneById(id: string) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new NotFoundException(`Usuario con id: ${id} no encontrado`)
     return user;
@@ -74,7 +74,7 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
 
-    const user = await this.findOne(id);
+    const user = await this.findOneById(id);
     const { password } = updateUserDto;
 
     if (!password) {
@@ -90,10 +90,10 @@ export class UserService {
 
 
   async updateLastConnection(id: string) {
-    const user = await this.findOne(id);
+    const user = await this.findOneById(id);
     try {
-      this.userRepository.save({ ...user, lastConnection: new Date() })
-      return true;
+     const {lastConnection }= await this.userRepository.save({ ...user, lastConnection: new Date() })
+      return lastConnection;
     } catch (e) {
       handlerDbError(e, this.logger);
     }
@@ -107,14 +107,12 @@ export class UserService {
   }
 
 
-  //Empty return is managed on auth module
-  async validateCredentials(email: string, password: string) {
+ 
+  async findOneByEmail(email: string) {
     const user = await this.userRepository.findOne({
-      where: {
-        email,
-        password
-      }
+      where: { email }
     });
+    if(!user) throw new NotFoundException(`Usuario con email: ${email} no encontrado`)
     return user;
   }
 }
