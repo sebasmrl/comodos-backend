@@ -30,7 +30,8 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
             }catch(e){
                 throw new UnauthorizedException('El token no es válido')    
             }
-            if(user.state) throw new UnauthorizedException('El usuario está inactivo, comunicate con el administrador') 
+            if(!    user.state) throw new UnauthorizedException('El usuario está inactivo, comunicate con el administrador') 
+            return user;
         }
 
 }

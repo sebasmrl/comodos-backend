@@ -19,23 +19,43 @@ export class AuthService {
 
 
     async login(loginDto:LoginDto){
-        const { password, ...data} = await this.userService.findOneByEmail(loginDto.email);
+        const { password, dni, birthdate, gender, nationality, phone, phoneCode, ...data} 
+                                    = await this.userService.findOneByEmail(loginDto.email);
         const comparation = await bcrypt.compare(loginDto.password, password)
         if(!comparation) throw new UnauthorizedException('Contraseña incorrecta, acceso denegado')
 
         const lastConnection = await this.userService.updateLastConnection(data.id);
         data.lastConnection = lastConnection;
-        const token = this.jwtService.sign({ id:data.id }); //por defecto es 15min
+        const token = this.jwtService.sign({ id:data.id} ); //por defecto es 15min
         const refreshToken = this.jwtService.sign(
             { id:data.id }, 
-            { expiresIn:'15m', secret: this.configService.get('REFRESH_JWT_SECRET') }
+            { 
+                expiresIn:'15m', 
+                secret: this.configService.get('REFRESH_JWT_SECRET') 
+            }
         );
 
         return {user:{...data}, token, refreshToken};
     }
 
 
+
     async registry(registryDto:RegistryDto){
         return this.userService.create(registryDto);
+    }
+
+
+
+    async refresh(id:string){
+        const token = this.jwtService.sign({ id:id }); //por defecto es 15min
+        const refreshToken = this.jwtService.sign(
+            { id:id }, 
+            {   
+                expiresIn:'15m', 
+                secret: this.configService.get('REFRESH_JWT_SECRET') 
+            }
+        );
+
+        return { token, refreshToken}
     }
 }
