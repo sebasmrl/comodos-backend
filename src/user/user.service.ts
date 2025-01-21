@@ -86,10 +86,7 @@ export class UserService {
       });
       return updatedUser;
     }
-
-
   }
-
 
 
   async updateLastConnection(id: string) {

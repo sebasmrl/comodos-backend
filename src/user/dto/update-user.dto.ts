@@ -5,9 +5,8 @@ import { Coords } from "./coords.dto";
 
 export class UpdateUserDto {
 
-    
     @IsOptional()
-    @IsString()
+    @IsString({message:'El campo password debe ser una cadena de caracteres'})
     @MinLength(10, { message: 'El campo password debe contener mínimo 10 caracteres' })
     @Matches(
         /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
@@ -16,22 +15,22 @@ export class UpdateUserDto {
     password?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({message:'El campo names debe ser una cadena de carateres'})
     names?: string;
 
     @IsOptional()
-    @IsString()
+    @IsString({message:'El campo lastnames debe ser una cadena de carateres'})
     lastnames?: string;
 
     @IsOptional()
-    @IsInt()
-    @IsPositive()
+    @IsInt({message:'El campo phone es un valor entero'})
+    @IsPositive({ message:'El campo phone debe ser un valor positivo'})
     phone?: number;
 
     @IsOptional()
-    @IsPositive()
-    @Max(999)
-    @IsInt()
+    @IsPositive({ message:'El campo phone debe ser un valor positivo'})
+    @Max(999,{ message:'El campo phoneCode debe ser menor o igual a 999'})
+    @IsInt({message:'El campo phoneCode es un valor entero'})
     phoneCode?: number;
 
     @IsOptional()

@@ -67,7 +67,6 @@ export class User {
     beforeUserUpdate():void{
         if(this.names) this.names = StringModifiers.toUpperCase(this.names);
         if(this.lastnames) this.lastnames = StringModifiers.toUpperCase(this.lastnames);
-        this.lastConnection = new Date()
     }
 
 
