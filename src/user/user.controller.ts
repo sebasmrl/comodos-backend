@@ -1,11 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ParseUUIDPipe, ParseIntPipe, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @Inject()
+    private readonly userService: UserService
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -13,22 +17,35 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() paginationDto:PaginationDto) {
+    return this.userService.findAll(paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const {password, ...result} = await this.userService.findOne(id);
+    return result;
+  }
+  @Get('/dni/:dni')
+  async findOneByDni(@Param('dni', ParseIntPipe) id: number) {
+    const {password, ...result} = await this.userService.findOneByDni(id);
+    return result;
+  }
+
+  @Get('/public/:id')
+  async findOnePublic(@Param('id', ParseUUIDPipe) id: string) {
+    //TODO:extraer foto cuando este la relacion y rating
+    const { names, lastnames, lastConnection,   ...rest} = await this.userService.findOne(id);
+    return {names, lastnames, lastConnection};
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.userService.remove(id);
   }
 }

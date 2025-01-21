@@ -32,6 +32,7 @@ Estas dependencias no son necesarias instalarlas puesto que al ejecutar `npm ins
 npm i @nestjs/config
 npm i class-validator class-transformer
 npm install --save @nestjs/typeorm typeorm pg
+npm i bcrypt
 
 ```
 
@@ -43,8 +44,7 @@ npm install --save @nestjs/typeorm typeorm pg
 
 ## Mantente en contacto
 - Author - [Sebastian Morales](https://sebastianmorales.dev)
-- Linkedin - [https://nestjs.com](https://nestjs.com/)
 - Linkedin - [Perfil de linkedin](https://www.linkedin.com/in/deivy-sebastian-morales/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Framework - [https://nestjs.com](https://nestjs.com/)
 
 
