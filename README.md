@@ -31,6 +31,7 @@ Estas dependencias no son necesarias instalarlas puesto que al ejecutar `npm ins
 ```bash
 npm i @nestjs/config
 npm i class-validator class-transformer
+npm install --save @nestjs/typeorm typeorm pg
 
 ```
 
