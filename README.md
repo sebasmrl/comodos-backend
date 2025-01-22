@@ -36,6 +36,8 @@ npm i bcrypt
 npm i @nestjs/passport passport @nestjs/jwt passport-jwt 
 npm i --save-dev @types/passport-jwt
 
+npm i -D @types/multer
+
 # usar este comando para generar claves de forma automatica
 openssl rand -base64 64
 ```

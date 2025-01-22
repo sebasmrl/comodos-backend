@@ -1,6 +1,7 @@
 import { StringModifiers } from "src/common/helpers";
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Coords } from "../dto/coords.dto";
+import { ProfileImage} from "src/profile-image/entities/profile-image.entity";
 
 
 @Entity({ name:'users'})
@@ -48,14 +49,22 @@ export class User {
     @Column({ type:'jsonb', nullable:true})
     coords:Coords
     
-
+    
+    //---------------- Relations ----------------------
+    @JoinColumn({name:'profile_image'})
+    @OneToOne(
+        ()=>ProfileImage,
+        (profileImage)=> profileImage.user,
+        {eager:true, cascade:true} 
+    )
+    profileImage:ProfileImage;
+    
     //TODO: Relations
-    //Relations
-    //profileImage:Image; //OneToOne
     //ratings: Rating[] //OneToMany
     //adds: Add[] //
 
 
+    
     @BeforeInsert()
     beforeUserInsert():void{
        this.names = StringModifiers.toUpperCase(this.names);

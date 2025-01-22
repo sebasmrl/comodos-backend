@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
+import { ProfileImageModule } from './profile-image/profile-image.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -19,7 +20,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     UserModule,
     CommonModule,
-    AuthModule],
+    AuthModule,
+    ProfileImageModule],
   controllers: [],
   providers: [],
 })
