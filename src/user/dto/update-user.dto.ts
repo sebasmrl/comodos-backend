@@ -1,6 +1,6 @@
 import { IsInt, IsObject, IsOptional, IsPositive, IsString, Matches, Max, MinLength, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { Coords } from "./coords.dto";
+import { Coords } from "../../common/dto/coords.dto";
 
 
 export class UpdateUserDto {

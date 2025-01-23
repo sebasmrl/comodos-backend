@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileImageModule } from './profile-image/profile-image.module';
+import { AdModule } from './ad/ad.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -21,7 +22,8 @@ import { ProfileImageModule } from './profile-image/profile-image.module';
     UserModule,
     CommonModule,
     AuthModule,
-    ProfileImageModule],
+    ProfileImageModule,
+    AdModule],
   controllers: [],
   providers: [],
 })

@@ -42,6 +42,11 @@ npm i -D @types/multer
 openssl rand -base64 64
 ```
 
+## Notas
+
+1. El modulo common provee servicios para seleccion de ubicación, por ahora solo en Colombia  
+(Los Datos fueron tomados del DANE en un archivo CSV) [CSV](./src/common/data/Departamentos_y_municipios_de_Colombia_20250123.csv)  recurso tomado de [Datos Abiertos de Colombia](https://www.datos.gov.co/Mapas-Nacionales/Departamentos-y-municipios-de-Colombia/xdk5-pm3f/about_data).
+Lo datos tomados del  [CSV](./src/common/data/Departamentos_y_municipios_de_Colombia_20250123.csv) fueron transformados a un JSON legible a traves de un endpoint en commons llamado `/csv`, dicho endpoint no se estipula tener publico dado que es para un uso especifico.
 
 
 ## Soporte

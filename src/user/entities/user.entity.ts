@@ -1,6 +1,6 @@
 import { StringModifiers } from "src/common/helpers";
 import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Coords } from "../dto/coords.dto";
+import { Coords } from "../../common/dto/coords.dto";
 import { ProfileImage} from "src/profile-image/entities/profile-image.entity";
 
 
