@@ -1,4 +1,4 @@
-import { IsBoolean, IsDecimal, IsIn, IsInt, IsOptional, IsPositive, IsString, MaxLength, MinLength } from "class-validator";
+import { IsBoolean, IsDecimal, IsIn, IsInt, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from "class-validator";
 
 
 export class CreateAdDto {
@@ -29,7 +29,7 @@ export class CreateAdDto {
     @MaxLength(60, {message:'El campo locationCountry deber menor o igual a 60 caracteres'})
     address: string;
 
-    @IsDecimal({},{message:'El campo price debe ser un numero válido'})
+    @IsNumber({},{message:'El campo price debe ser un numero válido'})
     @IsPositive({message:'El campo price debe ser un número positivo'})
     price: number;
 
@@ -77,9 +77,9 @@ export class CreateAdDto {
     carParking: boolean;
 
     @IsOptional()
-    @IsDecimal({},{message:'El campo administrationCost debe ser un numero válido'})
+    @IsNumber({ },{message:'El campo administrationCost debe ser un numero válido'})
     @IsPositive({message:'El campo administrationCost debe ser un número positivo'})
-    adminitrationCost: number;
+    administrationCost: number;
 
     @IsOptional()
     @IsBoolean({message:'El campo isSharedKitchen debe contener un valor boolean'})
@@ -100,7 +100,8 @@ export class CreateAdDto {
     @IsBoolean({message:'El campo hasInternetServiceIntegrated debe contener un valor boolean'})
     hasInternetServiceIntegrated: boolean;
 
+    //user:User viene en la autenticacion
+
     //No se puede crear sin
-    //user:User
     //period:PeriodAd
 }

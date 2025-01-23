@@ -1,5 +1,6 @@
 import { Coords } from "src/common/dto/coords.dto";
-import { BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/user/entities/user.entity";
+import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('adds')
 export class Ad {
@@ -101,9 +102,16 @@ export class Ad {
 
 
     // ----------------- Relations ------------------
+    @ManyToOne(
+        ()=>User,
+        (user)=>user.adds,
+        { onDelete: "SET NULL" }
+    )
+    user:User
+
+
     //TODO: Hacer relaciones correspondientes
     // propertyType: PropertyType  (aparatemento de conjunto, aparatamento de casa, casa, cabaña, habitacion, finca, casaquinta, hotel)
-    //user:User
     //images: AdImage
     //reports: AdReport
     //period: AdPeriod  (dia, semana, mes)

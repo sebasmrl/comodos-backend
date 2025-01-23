@@ -1,7 +1,8 @@
 import { StringModifiers } from "src/common/helpers";
-import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Coords } from "../../common/dto/coords.dto";
 import { ProfileImage} from "src/profile-image/entities/profile-image.entity";
+import { Ad } from "src/ad/entities/ad.entity";
 
 
 @Entity({ name:'users'})
@@ -58,11 +59,18 @@ export class User {
         {eager:true, cascade:true} 
     )
     profileImage:ProfileImage;
+
+
+    @OneToMany(
+        ()=>Ad,
+        (ad)=> ad.user,
+        { cascade: ["remove"], onDelete:'CASCADE'}
+    )
+    adds:Ad[]
+
     
     //TODO: Relations
     //ratings: Rating[] //OneToMany
-    //adds: Add[] //
-
 
     
     @BeforeInsert()
