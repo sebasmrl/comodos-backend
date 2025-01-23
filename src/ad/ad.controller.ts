@@ -3,7 +3,7 @@ import { AdService } from './ad.service';
 import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 
-@Controller('ad')
+@Controller('adds')
 export class AdController {
   constructor(private readonly adService: AdService) {}
 

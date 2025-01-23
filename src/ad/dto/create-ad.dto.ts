@@ -1,7 +1,4 @@
-import { IsString, MaxLength, MinLength } from "class-validator";
-
-
-
+import { IsBoolean, IsDecimal, IsIn, IsInt, IsOptional, IsPositive, IsString, MaxLength, MinLength } from "class-validator";
 
 
 export class CreateAdDto {
@@ -16,59 +13,94 @@ export class CreateAdDto {
     @MaxLength(500, { message:'EL campo description debe ser menor o igual a 500 caracteres'})
     description: string;
 
-    @IsString({message:''})
+    @IsString({message:'El campo locationCountry debe ser una cadena de caracteres'})
+    @MaxLength(25, {message:'El campo locationCountry deber menor o igual a 25 caracteres'})
     locationCountry: string;
 
+    @IsString({message:'El campo locationState debe ser una cadena de caracteres'})
+    @MaxLength(25, {message:'El campo locationState deber menor o igual a 25 caracteres'})
     locationState: string;
 
+    @IsString({message:'El campo locationCity debe ser una cadena de caracteres'})
+    @MaxLength(25, {message:'El campo locationCity deber menor o igual a 25 caracteres'})
     locationCity: string;
 
+    @IsString({message:'El campo address debe ser una cadena de caracteres'})
+    @MaxLength(60, {message:'El campo locationCountry deber menor o igual a 60 caracteres'})
     address: string;
 
+    @IsDecimal({},{message:'El campo price debe ser un numero válido'})
+    @IsPositive({message:'El campo price debe ser un número positivo'})
     price: number;
 
+    @IsOptional()
+    @IsString({message:'El campo currency debe ser una cadena de caracteres'})
+    @IsIn(['COP', 'USD', 'EUR'],{message:(values)=> `El campo currency no coincide con los valores permitidos: [${values.constraints}]`})
     currency: string;
 
+    @IsInt({message:'El campo rooms debe ser un valor entero'})
+    @IsPositive({message:'El campo rooms debe ser un valor entero positivo'})
     rooms: number;
 
+    @IsBoolean({message:'El campo livingRoom debe contener un valor boolean'})
     livingRoom: boolean;
 
+    @IsInt({message:'El campo bathrooms debe ser un valor entero'})
+    @IsPositive({message:'El campo bathrooms debe ser un valor entero positivo'})
     bathrooms: number;
 
+    @IsBoolean({message:'El campo isSharedBathroom debe contener un valor boolean'})
     isSharedBathroom: boolean;
 
+    @IsOptional()
+    @IsInt({message:'El campo floors debe ser un valor entero'})
+    @IsPositive({message:'El campo floors debe ser un valor entero positivo'})
     floors: number;
 
+    @IsString({message:'El campo stratum debe ser una cadena de caracteres'})
+    @MaxLength(30, {message:'El campo stratumdeber menor o igual a 30 caracteres'})
     stratum: string;
 
+    @IsBoolean({message:'El campo yard debe contener un valor boolean'})
     yard: boolean;
 
+    @IsInt({message:'El campo squareMeters debe ser un valor entero'})
+    @IsPositive({message:'El campo squareMeters debe ser un valor entero positivo'})
     squareMeters: number;
 
+    @IsOptional()
+    @IsBoolean({message:'El campo motoParking debe contener un valor boolean'})
     motoParking: boolean;
 
+    @IsOptional()
+    @IsBoolean({message:'El campo carParking debe contener un valor boolean'})
     carParking: boolean;
 
+    @IsOptional()
+    @IsDecimal({},{message:'El campo administrationCost debe ser un numero válido'})
+    @IsPositive({message:'El campo administrationCost debe ser un número positivo'})
     adminitrationCost: number;
 
+    @IsOptional()
+    @IsBoolean({message:'El campo isSharedKitchen debe contener un valor boolean'})
     isSharedKitchen: boolean;
 
+    @IsBoolean({message:'El campo furnished debe contener un valor boolean'})
     furnished: boolean;
 
+    @IsBoolean({message:'El campo hasElectricLightService debe contener un valor boolean'})
     hasElectricLightService: boolean;
 
+    @IsBoolean({message:'El campo hasGasService debe contener un valor boolean'})
     hasGasService: boolean;
 
+    @IsBoolean({message:'El campo hasWaterService debe contener un valor boolean'})
     hasWaterService: boolean;
 
+    @IsBoolean({message:'El campo hasInternetServiceIntegrated debe contener un valor boolean'})
     hasInternetServiceIntegrated: boolean;
 
-    renevaldDate: Date
-
-    //days*24h*60min*60s*1000ms
-    expiredDate: Date
-
-    updateAt: Date
-
-    createdAt: Date
+    //No se puede crear sin
+    //user:User
+    //period:PeriodAd
 }

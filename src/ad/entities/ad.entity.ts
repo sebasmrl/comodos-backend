@@ -1,5 +1,5 @@
 import { Coords } from "src/common/dto/coords.dto";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('adds')
 export class Ad {
@@ -52,7 +52,7 @@ export class Ad {
     @Column({ type:'varchar', length:30})
     stratum:string;
     
-    @Column({ type:'varchar'})
+    @Column({ type:'boolean'})
     yard:boolean;
 
     @Column({ name:'square_meters', type:'integer'})
@@ -97,16 +97,20 @@ export class Ad {
 
     @Column({name:'created_at',type:'timestamptz', default:  new Date()})
     createdAt:Date
-
+    //31
 
 
     // ----------------- Relations ------------------
     //TODO: Hacer relaciones correspondientes
-    // PropertyType (aparatemento de conjunto, aparatamento de casa, casa, cabaña, habitacion, finca, casaquinta, hotel)
+    // propertyType: PropertyType  (aparatemento de conjunto, aparatamento de casa, casa, cabaña, habitacion, finca, casaquinta, hotel)
     //user:User
     //images: AdImage
     //reports: AdReport
     //period: AdPeriod  (dia, semana, mes)
 
+    @BeforeUpdate()
+    private beforeUpdate(){
+        this.updateAt = new Date();
+    }
     
 }
