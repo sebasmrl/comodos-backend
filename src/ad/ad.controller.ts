@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AdService } from './ad.service';
 import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { User } from 'src/user/entities/user.entity';
+import { AdSearchFilterDto } from './dto/ad-search-filter.dto';
 
 @Controller('adds')
 export class AdController {
@@ -17,8 +18,9 @@ export class AdController {
   }
 
   @Get()
-  async findAll() {
-    return await  this.adService.findAll();
+  async findAll(@Query() filter:AdSearchFilterDto) {
+    console.log(filter)
+    return await  this.adService.findAll(filter);
   }
 
   @Get('/user/:id')

@@ -3,13 +3,14 @@ import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ad } from './entities/ad.entity';
-import { Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { AdSearchFilterDto } from './dto/ad-search-filter.dto';
 
 @Injectable()
 export class AdService {
 
-  private readonly logger:Logger = new Logger('AdService')
+  private readonly logger: Logger = new Logger('AdService')
   constructor(
     @InjectRepository(Ad)
     private readonly adRepository: Repository<Ad>
@@ -25,34 +26,49 @@ export class AdService {
     return { ...result, user: s.id, userAddsNumber: userAddsNumber + 1 };
   }
 
-  //TODO: Endpoint principal 
-  //TODO: Recibir argumentos en la peticion y añadir validaciones de precios, tipo de propiedad y periodo de facturacion
-  async findAll() {
 
-    const {lat, lng} ={lat: 4.60562365, lng: -74.0554853141819}
+  //TODO: filtro de tipo de propiedad y periodo de facturacion
+  async findAll(filter: AdSearchFilterDto) {
+    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice } = filter;
+    console.log(minPrice, maxPrice)
+
     try {
-    return await this.adRepository.createQueryBuilder('ad')
-    .select([
-      'ad.id',
-      'ad.name',
-      'ad.coords',
-      `(6371 * ACOS(
+      let query = this.adRepository.createQueryBuilder('ad')
+        .select([
+          'ad.id',
+          'ad.name',
+          'ad.price',
+          'ad.coords',
+          `(6371 * ACOS(
         COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
         COS(RADIANS((ad.coords->>'lng')::DOUBLE PRECISION) - RADIANS(:lng)) + 
         SIN(RADIANS(:lat)) * SIN(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION))
-      )) AS distance`
-    ])
-    .setParameter('lat', lat)
-    .setParameter('lng', lng)
-    .orderBy('distance', 'ASC')
-    .limit(10)
-    .offset(0)
-    .getRawMany();
+      )) AS distance` 
+      ]);
 
-  } catch (error) {
-    this.logger.error(error)
+      if ( minPrice !== undefined) {   query.andWhere('ad.price >= :minPrice', { minPrice: minPrice });  }
+      if ( maxPrice !== undefined) {   query.andWhere('ad.price <= :maxPrice', { maxPrice: maxPrice }); } 
+
+      return await query.andWhere(`(6371 * ACOS(
+        COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
+        COS(RADIANS((ad.coords->>'lng')::DOUBLE PRECISION) - RADIANS(:lng)) + 
+        SIN(RADIANS(:lat)) * SIN(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION))
+      )) < :range`, { range: range })
+        .andWhere({
+          'expiredDate': MoreThan(new Date())
+        })
+        .setParameter('lng', lng)
+        .setParameter('lat', lat)
+        .orderBy('distance', 'ASC')
+        .addOrderBy('ad.price', 'ASC')
+        .limit(limit)
+        .offset(offset)
+        .getRawMany();
+
+    } catch (error) {
+      this.logger.error(error)
       throw new InternalServerErrorException(error);
-  }
+    }
   }
 
   async findAllAddsByUserId(id: string) {
@@ -66,13 +82,13 @@ export class AdService {
   }
 
   async update(id: string, updateAdDto: UpdateAdDto) {
-    if(Object.keys(updateAdDto).length == 0) 
+    if (Object.keys(updateAdDto).length == 0)
       throw new BadRequestException('No hay ningun campo a actulizar en el cuerpo de la petición');
     const ad = await this.findOne(id);
 
     const { renevaldDate, ...data } = updateAdDto;
 
-    console.log({id, renevaldDate, data, ad})
+    console.log({ id, renevaldDate, data, ad })
 
     if (renevaldDate) {
       if (ad.expiredDate > new Date()) {
@@ -84,7 +100,7 @@ export class AdService {
         });
       }
     }
-    return await this.adRepository.save({...ad, ...data });
+    return await this.adRepository.save({ ...ad, ...data });
   }
 
   async remove(id: string) {
