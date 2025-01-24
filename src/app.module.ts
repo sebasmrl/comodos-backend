@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileImageModule } from './profile-image/profile-image.module';
 import { AdModule } from './ad/ad.module';
 import { AdPeriodModule } from './ad-period/ad-period.module';
+import { PropertyTypeModule } from './property-type/property-type.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -25,7 +26,8 @@ import { AdPeriodModule } from './ad-period/ad-period.module';
     AuthModule,
     ProfileImageModule,
     AdModule,
-    AdPeriodModule],
+    AdPeriodModule,
+    PropertyTypeModule],
   controllers: [],
   providers: [],
 })

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateAdPeriodDto } from './dto/create-ad-period.dto';
 import { UpdateAdPeriodDto } from './dto/update-ad-period.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,6 +30,7 @@ export class AdPeriodService {
   }
 
  async  update(id: string, updateAdPeriodDto: UpdateAdPeriodDto) {
+    if(Object.keys(updateAdPeriodDto).length == 0) throw new BadRequestException('No hay datos para actualizar en el cuerpo de la petición')
     const adPeriod = await this.findOne(id);
     const updatedAdPeriod = await this.adPeriodRepository.save({...adPeriod, ...updateAdPeriodDto});
     return updatedAdPeriod;

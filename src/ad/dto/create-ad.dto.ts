@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength, ValidateNested } from "class-validator";
 import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
+import { PropertyType } from "src/property-type/entities/property-type.entity";
 
 
 export class CreateAdDto {
@@ -109,9 +110,10 @@ export class CreateAdDto {
     hasInternetServiceIntegrated: boolean;
 
     //user:User viene en la autenticacion
-
+    
     @IsUUID('all',{message:'El campo period es requerido y debe ser un UUID valido'})
     period:AdPeriod;
-    //No se puede crear sin
-    //period:PeriodAd
+    
+    @IsUUID('all',{message:'El campo propertyType es requerido y debe ser un UUID valido'})
+    propertyType:PropertyType
 }

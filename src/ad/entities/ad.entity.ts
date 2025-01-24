@@ -1,5 +1,6 @@
 import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
+import { PropertyType } from "src/property-type/entities/property-type.entity";
 import { User } from "src/user/entities/user.entity";
 import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -116,6 +117,16 @@ export class Ad {
         {eager:true, onDelete: "SET NULL" }
     )
     period:AdPeriod
+
+
+    @ManyToOne(
+        ()=>PropertyType, 
+        (propertyType)=>propertyType.adds,
+        {eager:true, onDelete: "SET NULL" }
+    )
+    propertyType:PropertyType
+
+
 
 
 
