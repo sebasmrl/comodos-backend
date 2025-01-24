@@ -4,7 +4,7 @@
 
 
 ## Descripción
-Este respositorio corresponde al de Backend ResfullAPI para la aplicación "Comodos" realizada con el stack `Nest.js`, `TypeORM`,`MySql`, `JsonWebTokens`.   
+Este respositorio corresponde al de Backend ResfullAPI para la aplicación "Comodos" realizada con el stack `Nest.js`, `TypeORM`,`PostgreSQL`, `JsonWebTokens`.   
 El desarrollo frontend está ubicado en el repositorio [Comodos Frontend](https://github.com/sebasmrl/comodos-frontend)
 
 ## Instalación
