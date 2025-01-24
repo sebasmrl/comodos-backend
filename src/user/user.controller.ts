@@ -38,8 +38,8 @@ export class UserController {
   @Get('/public/:id')
   async findOnePublic(@Param('id', ParseUUIDPipe) id: string) {
     //TODO:extraer foto cuando este la relacion y rating
-    const { names, lastnames, lastConnection,   ...rest} = await this.userService.findOneById(id);
-    return {names, lastnames, lastConnection};
+    const { names, lastnames, lastConnection, profileImage,   ...rest} = await this.userService.findOneById(id);
+    return {names, lastnames, lastConnection, profileImage};
   }
 
   @Patch(':id')

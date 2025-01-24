@@ -27,7 +27,8 @@ import { PropertyTypeModule } from './property-type/property-type.module';
     ProfileImageModule,
     AdModule,
     AdPeriodModule,
-    PropertyTypeModule],
+    PropertyTypeModule,
+  ],
   controllers: [],
   providers: [],
 })
