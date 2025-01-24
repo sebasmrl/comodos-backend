@@ -17,8 +17,8 @@ export class AdController {
   }
 
   @Get()
-  findAll() {
-    return this.adService.findAll();
+  async findAll() {
+    return await  this.adService.findAll();
   }
 
   @Get('/user/:id')

@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { User } from 'src/user/entities/user.entity';
 @Injectable()
 export class AdService {
 
+  private readonly logger:Logger = new Logger('AdService')
   constructor(
     @InjectRepository(Ad)
     private readonly adRepository: Repository<Ad>
@@ -16,7 +17,7 @@ export class AdService {
 
   async create(createAdDto: CreateAdDto, user: User) {
     const userAddsNumber = await this.adRepository.countBy({ user });
-    if (userAddsNumber >= 2) throw new ForbiddenException('Ya cuentas con la cuota maxima de 2 anuncios por persona')
+    if (userAddsNumber >= 10) throw new ForbiddenException('Ya cuentas con la cuota maxima de 2 anuncios por persona')
 
     const ad = this.adRepository.create({ ...createAdDto, user })
 
@@ -25,9 +26,33 @@ export class AdService {
   }
 
   //TODO: Endpoint principal 
-  //TODO: Pendiente evaluacion de consulta y estragia (storeProcedure o consulta directa)
+  //TODO: Recibir argumentos en la peticion y añadir validaciones de precios, tipo de propiedad y periodo de facturacion
   async findAll() {
-    return []; 
+
+    const {lat, lng} ={lat: 4.60562365, lng: -74.0554853141819}
+    try {
+    return await this.adRepository.createQueryBuilder('ad')
+    .select([
+      'ad.id',
+      'ad.name',
+      'ad.coords',
+      `(6371 * ACOS(
+        COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
+        COS(RADIANS((ad.coords->>'lng')::DOUBLE PRECISION) - RADIANS(:lng)) + 
+        SIN(RADIANS(:lat)) * SIN(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION))
+      )) AS distance`
+    ])
+    .setParameter('lat', lat)
+    .setParameter('lng', lng)
+    .orderBy('distance', 'ASC')
+    .limit(10)
+    .offset(0)
+    .getRawMany();
+
+  } catch (error) {
+    this.logger.error(error)
+      throw new InternalServerErrorException(error);
+  }
   }
 
   async findAllAddsByUserId(id: string) {
