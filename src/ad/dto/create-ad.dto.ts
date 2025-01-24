@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
 
 
@@ -109,6 +110,8 @@ export class CreateAdDto {
 
     //user:User viene en la autenticacion
 
+    @IsUUID('all',{message:'El campo period es requerido y debe ser un UUID valido'})
+    period:AdPeriod;
     //No se puede crear sin
     //period:PeriodAd
 }

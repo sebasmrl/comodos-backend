@@ -12,9 +12,9 @@ export class AdController {
 
   @Auth()
   @Post()
-  create(@Body() createAdDto: CreateAdDto, @Req() req:Request) {
+  async create(@Body() createAdDto: CreateAdDto, @Req() req:Request) {
     const user:User = req['user'];
-    return this.adService.create(createAdDto, user);
+    return await  this.adService.create(createAdDto, user);
   }
 
   @Get()

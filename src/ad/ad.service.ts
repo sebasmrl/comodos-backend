@@ -30,7 +30,6 @@ export class AdService {
   //TODO: filtro de tipo de propiedad y periodo de facturacion
   async findAll(filter: AdSearchFilterDto) {
     const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice } = filter;
-    console.log(minPrice, maxPrice)
 
     try {
       let query = this.adRepository.createQueryBuilder('ad')
@@ -87,8 +86,6 @@ export class AdService {
     const ad = await this.findOne(id);
 
     const { renevaldDate, ...data } = updateAdDto;
-
-    console.log({ id, renevaldDate, data, ad })
 
     if (renevaldDate) {
       if (ad.expiredDate > new Date()) {

@@ -1,3 +1,4 @@
+import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
 import { User } from "src/user/entities/user.entity";
 import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -108,6 +109,15 @@ export class Ad {
         { onDelete: "SET NULL" }
     )
     user:User
+
+    @ManyToOne(
+        ()=>AdPeriod, 
+        (adPeriod)=>adPeriod.adds,
+        {eager:true, onDelete: "SET NULL" }
+    )
+    period:AdPeriod
+
+
 
 
     //TODO: Hacer relaciones correspondientes

@@ -6,6 +6,7 @@ import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileImageModule } from './profile-image/profile-image.module';
 import { AdModule } from './ad/ad.module';
+import { AdPeriodModule } from './ad-period/ad-period.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -23,7 +24,8 @@ import { AdModule } from './ad/ad.module';
     CommonModule,
     AuthModule,
     ProfileImageModule,
-    AdModule],
+    AdModule,
+    AdPeriodModule],
   controllers: [],
   providers: [],
 })
