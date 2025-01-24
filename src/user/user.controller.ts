@@ -49,6 +49,13 @@ export class UserController {
 
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.remove(id);
+    return this.userService.remove(id); 
+  }
+
+  @Auth()
+  @Post('adds')
+  getAdds(@Query() params:{ limit:number, offset:number}, @Req() req:Request ) {
+    const user:User = req['user'];
+    return this.userService.obtenerAnunciosMasCercanosParaUsuario(user, Number(params.limit), Number(params.offset));
   }
 }

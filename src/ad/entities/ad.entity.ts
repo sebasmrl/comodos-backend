@@ -14,7 +14,7 @@ export class Ad {
     @Column({type:'varchar', length:500})
     description:string;
 
-    @Column({ type:'jsonb', nullable:true})
+    @Column({ type:'jsonb'})
     coords:Coords
 
     @Column({name:'location_country', type:'varchar', length:25})

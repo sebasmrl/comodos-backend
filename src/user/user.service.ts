@@ -115,4 +115,12 @@ export class UserService {
     if(!user) throw new NotFoundException(`Usuario con email: ${email} no encontrado`)
     return user;
   }
+
+  async obtenerAnunciosMasCercanosParaUsuario(user:User, limit: number, offset: number) {
+    const result = await this.userRepository.query( 
+      `SELECT * FROM obtener_anuncios_mas_cercanos($1, $2, $3, $4 )`,
+      [user.coords.lat, user.coords.lng, limit, offset]
+    );
+    return result;
+  }
 }

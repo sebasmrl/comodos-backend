@@ -17,7 +17,7 @@ export class UpdateAdDto extends PartialType(CreateAdDto) {
     
     @IsOptional()
     @IsBoolean({message:'El campo renevalDate debe ser un valor boolean'})
-    renevaldDate: boolean
+    renevaldDate?: boolean
     //days*24h*60min*60s*1000ms
 
 
