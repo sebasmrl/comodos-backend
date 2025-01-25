@@ -37,12 +37,14 @@ export class ProfileImageService {
 
 
   async remove(id: string) {
+    //TODO: Validar que el usuario sea  el propietario
+    //TODO: realizar logica para eliminar imagen en el CloudStorage
     const profileImage = await this.findOne(id);
     try{
       const { affected}=  await this.profileImageRepository.update({id:profileImage.id},{ url:null})
        if(affected>0) return true;
     }catch(e){
-      throw new InternalServerErrorException(`Ocurrion un error inesperado, no se pudo actualizar la imagen con id: ${id}`)
+      throw new InternalServerErrorException(`Ocurrió un error inesperado, no se pudo actualizar la imagen con id: ${id}`)
     }
   }
 }

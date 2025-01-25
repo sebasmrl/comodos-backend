@@ -8,6 +8,7 @@ import { ProfileImageModule } from './profile-image/profile-image.module';
 import { AdModule } from './ad/ad.module';
 import { AdPeriodModule } from './ad-period/ad-period.module';
 import { PropertyTypeModule } from './property-type/property-type.module';
+import { AdImageModule } from './ad-image/ad-image.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -28,6 +29,7 @@ import { PropertyTypeModule } from './property-type/property-type.module';
     AdModule,
     AdPeriodModule,
     PropertyTypeModule,
+    AdImageModule,
   ],
   controllers: [],
   providers: [],
