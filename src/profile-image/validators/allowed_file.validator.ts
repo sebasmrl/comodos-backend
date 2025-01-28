@@ -31,7 +31,7 @@ export enum FileSubtype{
     
      //protected validationOptions: Record<string, any>;
      isValid(file?: IFile): boolean | Promise<boolean> {
-        const [_type,_subtype ] = file.mimetype.split('/');
+        const [_type,_subtype ] = file.mimetype.toLowerCase().split('/');
 
         return (
             this.validationOptions.fileTypes.includes(_type as FileType) 

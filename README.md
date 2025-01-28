@@ -4,7 +4,7 @@
 
 
 ## Descripción
-Este respositorio corresponde al de Backend ResfullAPI para la aplicación "Comodos" realizada con el stack `Nest.js`, `TypeORM`,`PostgreSQL`, `JsonWebTokens`.   
+Este respositorio corresponde al de Backend ResfullAPI para la aplicación "Comodos" realizada con el stack `Nest.js`, `TypeORM`,`PostgreSQL`, `JsonWebTokens`, `AWS S3`.   
 El desarrollo frontend está ubicado en el repositorio [Comodos Frontend](https://github.com/sebasmrl/comodos-frontend)
 
 ## Instalación
@@ -37,6 +37,10 @@ npm i @nestjs/passport passport @nestjs/jwt passport-jwt
 npm i --save-dev @types/passport-jwt
 
 npm i -D @types/multer
+
+npm i @aws-sdk/client-s3
+npm i @aws-sdk/s3-request-presigner     #para generar url de acceso temporal para el cliente
+
 
 # usar este comando para generar claves de forma automatica
 openssl rand -base64 64

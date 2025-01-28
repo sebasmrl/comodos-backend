@@ -7,13 +7,13 @@ export class ProfileImage {
     @PrimaryGeneratedColumn('uuid')
     id:string;
 
-    @Column({type:'text', nullable:false})
-    url:string;
+    @Column({type:'text', nullable:true})
+    key?:string;
 
     @OneToOne(
         ()=>User,
         (user)=> user.profileImage,
-        {eager:false}
+        {eager:false, onDelete: 'SET NULL'}
     )
     user:User
 }

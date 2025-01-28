@@ -1,50 +1,73 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, Res, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfileImage } from './entities/profile-image.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class ProfileImageService {
+
+  private readonly logger = new Logger('ProfileImageService');
   constructor(
     @InjectRepository(ProfileImage)
-    private readonly profileImageRepository: Repository<ProfileImage>
+    private readonly profileImageRepository: Repository<ProfileImage>,
+    private readonly s3Service: S3Service
   ) { }
 
 
   async createOrUpdate(file: Express.Multer.File, user: User) {
-    //TODO: Añadir logica de subir imagen y/o actualizar a/en algun CloudStorare y guardar en lugar de file.originalName la url del proveedor
+   
+    const fileType = file.mimetype.split('/')[1];
+    let url: string;
 
     if (user.profileImage) {
-      const { affected } = await this.profileImageRepository.update({ id: user.profileImage.id }, { url: file.originalname });
-      if (affected > 0) return {
-        id: user.profileImage.id,
-        url: file.originalname
+      const { affected } = await this.profileImageRepository.update({ id: user.profileImage.id }, { key: `${user.profileImage.id}.${fileType}` });
+      if (affected > 0) {
+        url = await this.s3Service.uploadFile(file, `${user.profileImage.id}.${fileType}`);
+        return {
+          id: user.profileImage.id,
+          key: `${user.profileImage.id}.${fileType}`,
+          url: url
+        }
       }
     } else {
-      const userImage = this.profileImageRepository.create({ user: user, url: file.originalname });
+      const userImage = this.profileImageRepository.create({ user: user });
+      url = await this.s3Service.uploadFile(file, `${userImage.id}.${fileType}`);
+      userImage.key = `${userImage.id}.${fileType}`;
+
       const { user: userFromImg, ...result } = await this.profileImageRepository.save(userImage);
-      return result;
+      return { ...result, url };
     }
 
   }
 
-  async findOne(id: string) {
-    const profileImage =  await this.profileImageRepository.findOneBy({ id });
-    if(!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
+
+  async findOneProfileImageFromDB(id: string,): Promise<ProfileImage> {
+    const profileImage = await this.profileImageRepository.findOneBy({ id });
+    if (!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
     return profileImage;
   }
 
 
-  async remove(id: string) {
-    //TODO: Validar que el usuario sea  el propietario
-    //TODO: realizar logica para eliminar imagen en el CloudStorage
-    const profileImage = await this.findOne(id);
-    try{
-      const { affected}=  await this.profileImageRepository.update({id:profileImage.id},{ url:null})
-       if(affected>0) return true;
-    }catch(e){
+  async findOneProfileImageUrl(id: string,): Promise<string> {
+    const profileImage = await this.findOneProfileImageFromDB(id);
+    return await this.s3Service.getFile(profileImage.key)
+  }
+
+
+  async remove(id: string, user: User) {
+    const profileImage = await this.findOneProfileImageFromDB(id);
+    if (profileImage.id != user.profileImage.id) throw new ForbiddenException('No tienes acceso a la modificación de este recurso')
+    try {
+      const { affected } = await this.profileImageRepository.update({ id: profileImage.id }, { key: null })
+      const deletedfromS3 = await this.s3Service.deleteFile(id);
+      if (affected > 0 && deletedfromS3) return true;
+    } catch (e) {
+      this.logger.error(e);
       throw new InternalServerErrorException(`Ocurrió un error inesperado, no se pudo actualizar la imagen con id: ${id}`)
     }
   }
+
+
 }

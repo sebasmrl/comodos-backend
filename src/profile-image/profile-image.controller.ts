@@ -1,19 +1,21 @@
-import { Controller, Get, Post, UseInterceptors, UploadedFile, ParseFilePipe, Param, ParseUUIDPipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, UseInterceptors, UploadedFile, ParseFilePipe, Param, ParseUUIDPipe, Req, Res, Header, Delete } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import AllowedFileValidator, { FileSubtype, FileType } from './validators/allowed_file.validator';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { ProfileImageService } from './profile-image.service';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import AllowedFileValidator, { FileSubtype, FileType } from './validators/allowed_file.validator';
 
 @Controller('user-images')
 export class ProfileImageController {
   constructor(private readonly profileImageService: ProfileImageService) { }
 
 
+  //@Header('Content-Type', 'application/octet-stream')
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string){
-    return await this.profileImageService.findOne(id);
+    const imageUrl = await this.profileImageService.findOneProfileImageUrl(id);
+    return imageUrl;
   }
 
 
@@ -39,10 +41,12 @@ export class ProfileImageController {
     return profileImage;
   }
 
+
   @Auth()
-  @Get(':id')
-  async delete(@Param('id', ParseUUIDPipe) id: string){
-    return await this.profileImageService.remove(id);
+  @Delete(':id')
+  async delete(@Param('id', ParseUUIDPipe) id: string, @Req() req:Request ,){
+    const userLogued:User = req['user']
+    return await this.profileImageService.remove(id, userLogued);
   }
 
 }

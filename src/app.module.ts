@@ -9,9 +9,13 @@ import { AdModule } from './ad/ad.module';
 import { AdPeriodModule } from './ad-period/ad-period.module';
 import { PropertyTypeModule } from './property-type/property-type.module';
 import { AdImageModule } from './ad-image/ad-image.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
+    /*MulterModule.register({ 
+      storage: memoryStorage()
+    }), */
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -30,6 +34,7 @@ import { AdImageModule } from './ad-image/ad-image.module';
     AdPeriodModule,
     PropertyTypeModule,
     AdImageModule,
+    S3Module,
   ],
   controllers: [],
   providers: [],
