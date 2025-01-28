@@ -17,24 +17,23 @@ export class ProfileImageService {
 
 
   async createOrUpdate(file: Express.Multer.File, user: User) {
-   
-    const fileType = file.mimetype.split('/')[1];
     let url: string;
 
+    //Nota: se guarda la key en lugar de la url completa porque el dominio de CloudFront podria cambiar en el futuro
     if (user.profileImage) {
-      const { affected } = await this.profileImageRepository.update({ id: user.profileImage.id }, { key: `${user.profileImage.id}.${fileType}` });
+      const { affected } = await this.profileImageRepository.update({ id: user.profileImage.id }, { key: user.profileImage.id });
       if (affected > 0) {
-        url = await this.s3Service.uploadFile(file, `${user.profileImage.id}.${fileType}`);
+        url = await this.s3Service.uploadFile(file, user.profileImage.id);
         return {
           id: user.profileImage.id,
-          key: `${user.profileImage.id}.${fileType}`,
+          key: user.profileImage.id, 
           url: url
         }
       }
     } else {
       const userImage = this.profileImageRepository.create({ user: user });
-      url = await this.s3Service.uploadFile(file, `${userImage.id}.${fileType}`);
-      userImage.key = `${userImage.id}.${fileType}`;
+      url = await this.s3Service.uploadFile(file, userImage.id);
+      userImage.key = userImage.id;
 
       const { user: userFromImg, ...result } = await this.profileImageRepository.save(userImage);
       return { ...result, url };
@@ -52,7 +51,7 @@ export class ProfileImageService {
 
   async findOneProfileImageUrl(id: string,): Promise<string> {
     const profileImage = await this.findOneProfileImageFromDB(id);
-    return await this.s3Service.getFile(profileImage.key)
+    return this.s3Service.getFileUrl(profileImage.key)
   }
 
 

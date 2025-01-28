@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 
@@ -20,30 +20,69 @@ export class S3Service {
                 secretAccessKey: configService.get('AWS_SECRET_KEY')
             }
         })
-    }   
+    }
 
-
-    async uploadFile(file: Express.Multer.File, fileKey:string, envVariableBucketName:string = 'AWS_BUCKET_NAME') {
-
-        const key = fileKey.split('.')[0];
-
-        const uploadParams = {
+    /**
+     * @description Crea y/o actualiza un objecto de un bucket Oy retorna la URL de acceso al objeto desde la capa de CloudFront
+     * @param file
+     * @param fileKey 
+     * @param fileKey 
+     * @returns string
+     */
+    async uploadFile(file: Express.Multer.File, fileKey: string, envVariableBucketName: string = 'AWS_BUCKET_NAME') {
+        const uploadParams: PutObjectCommandInput = {
             Bucket: this.configService.get(envVariableBucketName),
-            Key: key,  //.${file.mimetype.split('/')[1]}
+            Key: fileKey,  
             Body: file.buffer,
-            ContentType: file.mimetype
+            ContentType: file.mimetype,
+            CacheControl: "max-age=600, s-maxage=3600"
         }
         //command solo describe las operaciones
         const command = new PutObjectCommand(uploadParams);
         await this.s3Client.send(command);
 
-        const result =  await this.getFile(fileKey)
+        const result = this.getFileUrl(fileKey);
         return result;
     }
 
-    
+
+    /**
+     * @description Obtiene la url de acceso a un objecto de bucket desde la capa de CloudFront
+     * @param fileKey 
+     * @returns string
+     */
+    getFileUrl(fileKey: string) {
+        return `${this.configService.get('AWS_CLOUDFRONT_DOMAIN')}/${fileKey}`
+    }
+
+
+    /**
+    * @description Elimina un objeto dentro de un bucket dada su fileKey
+    * @param fileKey 
+    * @param envVariableBucketName
+    * @returns boolean | Error
+    */
+    async deleteFile(fileKey: string, envVariableBucketName: string = 'AWS_BUCKET_NAME') {
+        const command = new DeleteObjectCommand({
+            Bucket: this.configService.get(envVariableBucketName),
+            Key: fileKey,
+        });
+        await this.s3Client.send(command);
+        return true;
+    }
+
+
+
+
+    /**
+     * @description Obtiene la url temporal de un Objecto dentro de un Bucket de forma directa
+     * @deprecated  Esta funcion ya no se usará, puesto que se implementó la capa de AWS CloudFront
+     * @param fileKey 
+     * @param envVariableBucketName 
+     * @returns string
+     */
     //Se guarda la filekey (key.ext) en la entidad para saber que tipo devolver en la url temporal
-    async getFile(fileKey:string, envVariableBucketName:string = 'AWS_BUCKET_NAME') {
+    async getFileUrlFromBucketDirect(fileKey: string, envVariableBucketName: string = 'AWS_BUCKET_NAME') {
         const [key, ext] = fileKey.split('.');
         const command = new GetObjectCommand({
             Bucket: this.configService.get(envVariableBucketName),
@@ -51,25 +90,13 @@ export class S3Service {
             ResponseContentDisposition: 'inline',
             ResponseContentType: `image/${ext}`
         });
-;
-        const result =  await getSignedUrl(this.s3Client, command, { expiresIn: 600}); //6min
+        ;
+        const result = await getSignedUrl(this.s3Client, command, { expiresIn: 600 }); //6min
         return result;
     }
 
-
-    async deleteFile(fileKey:string, envVariableBucketName:string = 'AWS_BUCKET_NAME') {
-        const key = fileKey.split('.')[0];
-        const command = new DeleteObjectCommand({
-            Bucket: this.configService.get(envVariableBucketName),
-            Key: key,
-        });
-        await this.s3Client.send(command);
-        return true;
-    }
-
-
     //No disponible para uso - sin objetivo de uso
-    private async getFiles(file: Express.Multer.File, envVariableBucketName:string = 'AWS_BUCKET_NAME') {
+    private async getFiles(file: Express.Multer.File, envVariableBucketName: string = 'AWS_BUCKET_NAME') {
         const command = new ListObjectsCommand({
             Bucket: this.configService.get(envVariableBucketName)
         });
