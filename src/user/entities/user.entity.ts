@@ -49,6 +49,9 @@ export class User {
 
     @Column({ type:'jsonb', nullable:true})
     coords:Coords
+
+    @Column({type:'varchar', array:true, default:['USER']})
+    roles:string[]; 
     
     
     //---------------- Relations ----------------------
