@@ -16,9 +16,10 @@ export class AdImageController {
   }
 
   //finAll se descarta por cuanto es informacion que debe administrar findOne en AdController
+  
 
   @Auth()
-  @Post()
+  @Post(':idAd')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'main', maxCount: 1 },
@@ -52,14 +53,14 @@ export class AdImageController {
       ad_image_5?: Express.Multer.File[],
       ad_image_6?: Express.Multer.File[],
     },
-    @Req() req:Request
+    @Req() req:Request,
+    @Param('idAd', ParseUUIDPipe) id:string
   ) {
     const filesRefactor = Object.values(files).map((file) => file[0]);
     const user:User = req['user'];
-    return await this.adImageService.createOrUpdate(filesRefactor, user)
+    return await this.adImageService.createOrUpdate(filesRefactor, id, user)
   }
 
-  //TODO: Realizar metodo delete para multiples imagenes (maximo 7) requiriendo solamente los id's
 
   @Auth()
   @Delete(':id')
@@ -67,6 +68,7 @@ export class AdImageController {
     const user:User = req['user'];
     return await this.adImageService.remove(id, user);
   }
+
 
 
 

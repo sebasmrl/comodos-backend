@@ -10,6 +10,6 @@ import { Ad } from './entities/ad.entity';
   ],
   controllers: [AdController],
   providers: [AdService],
-  exports:[ TypeOrmModule ]
+  exports:[ TypeOrmModule, AdService ]
 })
 export class AdModule {}

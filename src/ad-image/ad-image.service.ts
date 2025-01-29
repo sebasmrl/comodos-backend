@@ -1,59 +1,125 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { AdService } from './../ad/ad.service';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdImage } from './entities/ad-image.entity';
 import { Repository } from 'typeorm';
+import { v5 as uuidv5 } from 'uuid';
+import { S3Service } from 'src/s3/s3.service';
+
 
 @Injectable()
 export class AdImageService {
-  
+
   constructor(
-      @InjectRepository(AdImage)
-      private readonly adImageRepository: Repository<AdImage>
-    ) { }
-  
-    async findOne(id: string) {
-      const profileImage =  await this.adImageRepository.findOneBy({ id });
-      if(!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
-      return profileImage;
-    }
+    @InjectRepository(AdImage)
+    private readonly adImageRepository: Repository<AdImage>,
+    private readonly adService: AdService,
+    private readonly s3Service:S3Service
+  ) { }
 
-    async findMainAdImage(id: string) {
-      const profileImage =  await this.adImageRepository.findOneBy({ id, fieldName:'main'});
-      if(!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
-      return profileImage;
-    }
-  
-    async createOrUpdate(files: Express.Multer.File[], user:User ) { // user: User
-      //TODO: Añadir logica de subir imagen y/o actualizar a/en algun CloudStorage y guardar en lugar de file.originalName la url del proveedor
-  
-      console.log({files})
-    /*   if (user.profileImage) {
-        const { affected } = await this.adImageRepository.update({ id: user.profileImage.id }, { url: file.originalname });
-        if (affected > 0) return {
-          id: user.profileImage.id,
-          url: file.originalname
-        }
-      } else {
-        const userImage = this.adImageRepository.create({ user: user, url: file.originalname });
-        const { user: userFromImg, ...result } = await this.adImageRepository.save(userImage);
-        return result;
-      } */
-      return true;
-    }
+  async findOne(id: string) {
+    const profileImage = await this.adImageRepository.findOneBy({ id });
+    if (!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
+    return profileImage;
+  }
 
-    
-    async remove(id: string, user:User) {
+  async findMainAdImage(id: string) {
+    const profileImage = await this.adImageRepository.findOneBy({ id, fieldName: 'main' });
+    if (!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
+    return profileImage;
+  }
 
-      //TODO: Validar que el usuario se el dueño del anuncio
-      //TODO: Realizar logica de eliminación de archivo en el CloudStorage
+  async findAllAdImagesByAdIdWithVerification(adId: string, user: User) {
+    await this.verifyAdIsUserProperty(adId, user);
+    return await this.adImageRepository.find({ where: { ad: { id: adId } } })
+  }
 
-      const adImage = await this.findOne(id);
-      try{
-        const { affected}=  await this.adImageRepository.delete({id:adImage.id})
-         if(affected>0) return true;
-      }catch(e){
-        throw new InternalServerErrorException(`Ocurrio un error inesperado, no se pudo eliminar imagen de anuncio con id: ${id}`)
+  private async findAllAdImagesByAdId(adId: string) {
+    return await this.adImageRepository.find({
+      where: {
+        ad: { id: adId },
       }
+    });
+  }
+
+
+  async createOrUpdate(files: Express.Multer.File[], adId: string, user: User) {
+    await this.verifyAdIsUserProperty(adId, user);
+
+    // Imagenes de un anuncio guardadas con anterioridad
+    const adImagesSaved = await this.findAllAdImagesByAdId(adId);
+
+    //Filtrado para identificar que imagenes vienen en los campos y si hay alguna img que viene pero no esta guardada
+    const imagesToUpdate: {
+      adImageModel: AdImage;
+      file: Express.Multer.File;
+    }[] = files.map(file => {
+      const found = adImagesSaved.filter(adImage => adImage.fieldName == file.fieldname)[0];
+      return (found)
+        ? {
+          adImageModel: this.adImageRepository.create({     //update
+            ...found,
+            fieldName: file.fieldname
+          }), file: file
+        }
+        : {
+          adImageModel: this.adImageRepository.create({    //create
+            ad: { id: adId },
+            key: uuidv5(file.fieldname, user.id),
+            fieldName: file.fieldname
+          }), file: file
+        };
+    })
+
+    /* //Filtrado para identificar las entidades que no vienen y deben eliminarse 
+      *Comentado para no incurrir en operaciones de escritura redundantes en DB y S3
+      const imagesToDelete = adImagesSaved.filter(img => {
+        return (imagesToUpdate.filter(img2 => img.id == img2.adImageModel.id).length > 0)
+        ? false : true;
+      }) 
+        //TODO: Eliminar las entidades de los cmapos que no vienen
+        const imageFilesDeleted = await this.adImageRepository.remove(imagesToDelete);
+      */
+
+
+    const imageFilesUpdated = await this.adImageRepository.save(imagesToUpdate.map(img => img.adImageModel));
+    await Promise.all([
+      imagesToUpdate.map((img => {
+        const promise = async () => {
+          return await this.s3Service.uploadFile(img.file, img.adImageModel.key)
+        }
+        return promise();
+      }))
+    ])
+
+    return ({ ipdatedImages: imageFilesUpdated });
+  }
+
+
+
+
+  async remove(id: string, user: User) {
+    await this.verifyAdIsUserProperty(id, user);
+    const adImage = await this.findOne(id);
+
+    try {
+      const { affected } = await this.adImageRepository.delete(adImage)
+      await this.s3Service.deleteFile(adImage.key);
+
+      if (affected > 0) return true;
+    } catch (e) {
+      throw new InternalServerErrorException(`Ocurrio un error inesperado, no se pudo eliminar imagen de anuncio con id: ${id}`)
     }
+
+  }
+
+
+  private async verifyAdIsUserProperty(id:string, user:User):Promise<boolean>{
+    const adIds = (await this.adService.findAllAdIdsByUserId(user.id)).map(ad => ad.id); //ids de anuncios del usuario
+    if (adIds.length > 0) {
+      if (!adIds.includes(id)) throw new ForbiddenException('No tienes acceso a la modificacion de este recurso');
+    }
+    return true;
+  }
 }

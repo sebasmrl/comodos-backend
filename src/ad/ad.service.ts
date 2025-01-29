@@ -71,7 +71,14 @@ export class AdService {
   }
 
   async findAllAddsByUserId(id: string) {
-    return this.adRepository.findBy({ user: { id } })
+    return await this.adRepository.findBy({ user: { id } })
+  }
+
+  async findAllAdIdsByUserId(id: string) {
+    return await this.adRepository.find({
+      where:{  user: { id }  },
+      select:{ id:true}
+    })
   }
 
   async findOne(id: string) {

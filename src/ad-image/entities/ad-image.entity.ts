@@ -1,5 +1,5 @@
 import { Ad } from "src/ad/entities/ad.entity";
-import { BeforeInsert, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { AfterInsert, BeforeInsert, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name:'ad_images'})
 export class AdImage {
@@ -10,8 +10,8 @@ export class AdImage {
         @Column({type:"varchar", length:10})
         fieldName:string;
 
-        @Column({type:'text', nullable:false})
-        url:string;
+        @Column({type:'text', nullable:true})
+        key:string;
     
         @ManyToOne(
             ()=>Ad,
