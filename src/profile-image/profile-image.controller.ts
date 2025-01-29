@@ -49,6 +49,8 @@ export class ProfileImageController {
     return await this.profileImageService.remove(id, userLogued);
   }
 
+  //TODO:Endpoints para SUPER_ADMIN de crearOactualizar y de eliminar
+
 }
 
 

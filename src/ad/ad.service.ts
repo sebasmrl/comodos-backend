@@ -18,7 +18,7 @@ export class AdService {
 
   async create(createAdDto: CreateAdDto, user: User) {
     const userAddsNumber = await this.adRepository.countBy({ user });
-    if (userAddsNumber >= 10) throw new ForbiddenException('Ya cuentas con la cuota maxima de 2 anuncios por persona')
+    if (userAddsNumber >= 5) throw new ForbiddenException('Ya cuentas con la cuota maxima de 5 anuncios por persona')
 
     const ad = this.adRepository.create({ ...createAdDto, user })
 
@@ -81,17 +81,21 @@ export class AdService {
     })
   }
 
+  
   async findOne(id: string) {
-    const ad = await this.adRepository.findOneBy({ id });
+    const ad = await this.adRepository.findOne({ where:{id}, loadRelationIds:{ relations: ['user']}});
     if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
     return ad;
   }
 
-  async update(id: string, updateAdDto: UpdateAdDto) {
+
+  async update(id: string, updateAdDto: UpdateAdDto, user:User) {
     if (Object.keys(updateAdDto).length == 0)
       throw new BadRequestException('No hay ningun campo a actulizar en el cuerpo de la petición');
-    const ad = await this.findOne(id);
 
+    const ad = await this.findOne(id);
+    this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
+    
     const { renevaldDate, ...data } = updateAdDto;
 
     if (renevaldDate) {
@@ -107,9 +111,9 @@ export class AdService {
     return await this.adRepository.save({ ...ad, ...data });
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
-    //TODO: Añadir logica para eliminar las imagenes del servicio de cloudStorage
+  async remove(id: string, user:User) {
+    const ad = await this.findOne(id);
+    this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
 
     try {
       await this.adRepository.delete({ id: id })
@@ -117,7 +121,10 @@ export class AdService {
     } catch (e) {
       throw new InternalServerErrorException(`Ocurrió un errror inesperado, el anuncio con id: ${id} no se pudo eliminar`)
     }
+  }
 
-
+  private verifyAdUserPropertyOrUserHasValidRole(ad:Ad, user:User){
+    if((String(ad.user) != user.id) || user.roles.includes('SUPER_ADMIN')) 
+      throw new ForbiddenException(`Lo sentimos ${user.names}, pero no tienes acceso a este recurso`);
   }
 }

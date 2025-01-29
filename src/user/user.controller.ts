@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { User } from './entities/user.entity';
+import { ValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 
 @Controller('users')
 export class UserController {
@@ -18,17 +19,20 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Auth()
+  @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
   @Get()
   findAll(@Query() paginationDto:PaginationDto, @Req() req:Request) {
     return this.userService.findAll(paginationDto);
   }
 
+  @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const {password, ...result} = await this.userService.findOneById(id);
     return result;
   }
+
+  @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
   @Get('/dni/:dni')
   async findOneByDni(@Param('dni', ParseIntPipe) id: number) {
     const {password, ...result} = await this.userService.findOneByDni(id);
@@ -37,19 +41,35 @@ export class UserController {
 
   @Get('/public/:id')
   async findOnePublic(@Param('id', ParseUUIDPipe) id: string) {
-    //TODO:extraer foto cuando este la relacion y rating
+    //TODO:extraer rating
     const { names, lastnames, lastConnection, profileImage,   ...rest} = await this.userService.findOneById(id);
     return {names, lastnames, lastConnection, profileImage};
   }
 
-  @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
+  @Auth(ValidRoles.SUPER_ADMIN)
+  @Patch('admin/:id')
+  updateByAdmin(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.updateByAdmin(id, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.remove(id); 
+  @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
+  @Patch()
+  updateBySelf( @Body() updateUserDto: UpdateUserDto, @Req() req:Request) {
+    const user:User = req['user'];
+    return this.userService.updateBySelf(user, updateUserDto);
+  }
+
+  @Auth(ValidRoles.SUPER_ADMIN)
+  @Delete('admin/:id')
+  removeByAdmin(@Param('id', ParseUUIDPipe) id: string) {
+    return this.userService.removeByAdmin(id); 
+  }
+
+  @Auth(ValidRoles.SUPER_ADMIN, ValidRoles.USER)
+  @Delete()
+  removeBySelf(@Req() req:Request) {
+    const user:User = req['user'];
+    return this.userService.removeBySelf(user); 
   }
 
   

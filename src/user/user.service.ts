@@ -72,9 +72,23 @@ export class UserService {
   }
 
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async updateByAdmin(id: string, updateUserDto: UpdateUserDto) {
 
     const user = await this.findOneById(id);
+    const { password } = updateUserDto;
+
+    if (!password) {
+      return await this.userRepository.save({...user, ...updateUserDto});
+    } else {
+      const encriptedPassword = await bcrypt.hash(updateUserDto.password, 10)
+      const updatedUser = await this.userRepository.save({
+        ...user, ...updateUserDto, password: encriptedPassword
+      });
+      return updatedUser;
+    }
+  }
+  async updateBySelf(user:User, updateUserDto: UpdateUserDto) {
+    
     const { password } = updateUserDto;
 
     if (!password) {
@@ -100,8 +114,14 @@ export class UserService {
   }
 
 
-  async remove(id: string) {
+  async removeByAdmin(id: string) {
     const { affected } = await this.userRepository.update({ id }, { state: false })
+    if (affected) return true;
+    return false;
+  }
+
+  async removeBySelf(user:User) {
+    const { affected } = await this.userRepository.update({ id:user.id }, { state: false })
     if (affected) return true;
     return false;
   }
