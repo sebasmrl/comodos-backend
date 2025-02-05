@@ -30,7 +30,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(
             { id:data.id }, 
             { 
-                expiresIn:'15m', 
+                expiresIn:'20m', 
                 secret: this.configService.get('REFRESH_JWT_SECRET') 
             }
         );
@@ -51,7 +51,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(
             { id:id }, 
             {   
-                expiresIn:'15m', 
+                expiresIn:'3h', 
                 secret: this.configService.get('REFRESH_JWT_SECRET') 
             }
         );
