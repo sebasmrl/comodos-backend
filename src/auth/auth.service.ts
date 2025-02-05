@@ -26,7 +26,7 @@ export class AuthService {
 
         const lastConnection = await this.userService.updateLastConnection(data.id);
         data.lastConnection = lastConnection;
-        const token = this.jwtService.sign({ id:data.id} ); //por defecto es 15min
+        const accessToken = this.jwtService.sign({ id:data.id} ); //por defecto es 15min
         const refreshToken = this.jwtService.sign(
             { id:data.id }, 
             { 
@@ -35,7 +35,7 @@ export class AuthService {
             }
         );
 
-        return {user:{...data}, token, refreshToken};
+        return {user:{...data}, accessToken, refreshToken};
     }
 
 
@@ -47,7 +47,7 @@ export class AuthService {
 
 
     async refresh(id:string){
-        const token = this.jwtService.sign({ id:id }); //por defecto es 15min
+        const accessToken = this.jwtService.sign({ id:id }); //por defecto es 15min
         const refreshToken = this.jwtService.sign(
             { id:id }, 
             {   
@@ -56,6 +56,6 @@ export class AuthService {
             }
         );
 
-        return { token, refreshToken}
+        return { accessToken, refreshToken}
     }
 }
