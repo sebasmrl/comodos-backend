@@ -3,9 +3,10 @@ import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ad } from './entities/ad.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { AdSearchFilterDto } from './dto/ad-search-filter.dto';
+import { AdPeriod } from 'src/ad-period/entities/ad-period.entity';
 
 @Injectable()
 export class AdService {
@@ -33,17 +34,28 @@ export class AdService {
 
     try {
       let query = this.adRepository.createQueryBuilder('ad')
+        .innerJoinAndSelect('ad.period', 'p')
+        .innerJoinAndSelect('ad.propertyType', 'pt')
         .select([
           'ad.id',
           'ad.name',
           'ad.price',
+          'ad.location_city',
+          'ad.address',
+          'ad.currency',
+          'ad.rooms',
+          'ad.bathrooms',
+          'ad.square_meters',
+          'ad.furnished',
           'ad.coords',
+          'p.name as period',
+          'pt.name as property_type',
           `(6371 * ACOS(
         COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
         COS(RADIANS((ad.coords->>'lng')::DOUBLE PRECISION) - RADIANS(:lng)) + 
         SIN(RADIANS(:lat)) * SIN(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION))
       )) AS distance` 
-      ]);
+      ])
 
       if ( minPrice !== undefined) {   query.andWhere('ad.price >= :minPrice', { minPrice: minPrice });  }
       if ( maxPrice !== undefined) {   query.andWhere('ad.price <= :maxPrice', { maxPrice: maxPrice }); } 
@@ -61,7 +73,6 @@ export class AdService {
         .orderBy('distance', 'ASC')
         .addOrderBy('ad.price', 'ASC')
         .limit(limit)
-        .offset(offset)
         .getRawMany();
 
     } catch (error) {
@@ -124,7 +135,7 @@ export class AdService {
   }
 
   private verifyAdUserPropertyOrUserHasValidRole(ad:Ad, user:User){
-    if((String(ad.user) != user.id) || user.roles.includes('SUPER_ADMIN')) 
+    if((String(ad.user) != user.id) || !user.roles.includes('SUPER_ADMIN')) 
       throw new ForbiddenException(`Lo sentimos ${user.names}, pero no tienes acceso a este recurso`);
   }
 }

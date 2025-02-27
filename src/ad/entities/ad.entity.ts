@@ -3,7 +3,7 @@ import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
 import { PropertyType } from "src/property-type/entities/property-type.entity";
 import { User } from "src/user/entities/user.entity";
-import { BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('adds')
 export class Ad {
@@ -118,7 +118,8 @@ export class Ad {
     {eager:true, onDelete: "SET NULL" }
     )
     images:AdImage[];
-
+    
+    @JoinColumn({name:'period_id'})
     @ManyToOne(
         ()=>AdPeriod, 
         (adPeriod)=>adPeriod.adds,
@@ -126,7 +127,7 @@ export class Ad {
     )
     period:AdPeriod
 
-
+    @JoinColumn({name:'property_type_id'})
     @ManyToOne(
         ()=>PropertyType, 
         (propertyType)=>propertyType.adds,

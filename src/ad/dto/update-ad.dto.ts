@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsBoolean, IsObject, IsOptional, ValidateNested } from 'class-validator';
+import { IsBoolean, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import { CreateAdDto } from './create-ad.dto';
@@ -20,8 +20,5 @@ export class UpdateAdDto extends PartialType(CreateAdDto) {
     renevaldDate?: boolean
     //days*24h*60min*60s*1000ms
 
-
-    //opciones de relaciones
-    //period:Period
   
 }

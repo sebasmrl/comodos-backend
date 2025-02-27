@@ -37,7 +37,7 @@ export class AdController {
   @Auth(ValidRoles.USER,  ValidRoles.SUPER_ADMIN)
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateAdDto: UpdateAdDto, @Req() req:Request) {
-    const user:User =  req['user'];
+    const user:User =  req['user']; 
     return await this.adService.update(id, updateAdDto, user);
   }
 
