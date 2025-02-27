@@ -40,21 +40,21 @@ export class AdService {
           'ad.id',
           'ad.name',
           'ad.price',
-          'ad.location_city',
+          'ad.location_city as ad_location_city',
           'ad.address',
           'ad.currency',
           'ad.rooms',
           'ad.bathrooms',
-          'ad.square_meters',
+          'ad.square_meters as ad_square_meters',
           'ad.furnished',
           'ad.coords',
-          'p.name as period',
-          'pt.name as property_type',
+          'p.name as ad_period',
+          'pt.name as ad_property_type',
           `(6371 * ACOS(
         COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
         COS(RADIANS((ad.coords->>'lng')::DOUBLE PRECISION) - RADIANS(:lng)) + 
         SIN(RADIANS(:lat)) * SIN(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION))
-      )) AS distance` 
+      )) AS ad_distance` 
       ])
 
       if ( minPrice !== undefined) {   query.andWhere('ad.price >= :minPrice', { minPrice: minPrice });  }
@@ -70,7 +70,7 @@ export class AdService {
         })
         .setParameter('lng', lng)
         .setParameter('lat', lat)
-        .orderBy('distance', 'ASC')
+        .orderBy('ad_distance', 'ASC')
         .addOrderBy('ad.price', 'ASC')
         .limit(limit)
         .getRawMany();
