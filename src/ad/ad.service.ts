@@ -99,12 +99,12 @@ export class AdService {
     const { renevaldDate, ...data } = updateAdDto;
 
     if (renevaldDate) {
-      if (ad.expiredDate > new Date()) {
+      if (ad.expiredDate < new Date()) {
         return await this.adRepository.save({
           ...ad,
+          ...data,
           renevaldDate: new Date(),
           expiredDate: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
-          ...data,
         });
       }
     }
