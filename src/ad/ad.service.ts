@@ -30,7 +30,7 @@ export class AdService {
 
   //TODO: filtro de tipo de propiedad y periodo de facturacion
   async findAll(filter: AdSearchFilterDto) {
-    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice } = filter;
+    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period="Mensual" } = filter;
 
     try {
       let query = this.adRepository.createQueryBuilder('ad')
@@ -59,6 +59,8 @@ export class AdService {
 
       if ( minPrice !== undefined) {   query.andWhere('ad.price >= :minPrice', { minPrice: minPrice });  }
       if ( maxPrice !== undefined) {   query.andWhere('ad.price <= :maxPrice', { maxPrice: maxPrice }); } 
+      if(propertyType !== undefined){query.andWhere('pt.name = :propertyType', {propertyType:propertyType}) }
+      if(period !== undefined){query.andWhere('p.name = :period', {period:period}) }
 
       return await query.andWhere(`(6371 * ACOS(
         COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 

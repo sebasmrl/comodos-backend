@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsInt, IsNumber, IsNumberString, IsOptional, IsPositive, Max, Min } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPositive, IsString, Max, Min, MinLength } from "class-validator";
 
 export class AdSearchFilterDto {
 
@@ -42,7 +42,14 @@ export class AdSearchFilterDto {
     @Transform(({ value} ) =>  Number(value) )
     range?: number;
 
-    //TODO: property_type
-    //TODO: period
+    @IsOptional()
+    @IsString({message:'El campo propertyType debe ser una cadena de texto'})
+    @IsNotEmpty({message:'El campo period no puede ser vacio'})
+    propertyType?:string;
+
+    @IsOptional()
+    @IsNotEmpty({message:'El campo period no puede ser vacio'})
+    @IsString({message:'El campo period debe ser una cadena de texto'})
+    period?:string;
    
 }
