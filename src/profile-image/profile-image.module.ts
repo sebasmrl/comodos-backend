@@ -12,6 +12,6 @@ import { S3Module } from 'src/s3/s3.module';
   ],
   controllers: [ProfileImageController],
   providers: [ProfileImageService],
-  exports:[TypeOrmModule, ]
+  exports:[TypeOrmModule, ProfileImageService ]
 })
 export class ProfileImageModule {}

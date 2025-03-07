@@ -24,6 +24,7 @@ export class AdImageService {
     return profileImage;
   }
 
+  //Obtine solo la imagen principal segun su id
   async findMainAdImage(id: string) {
     const profileImage = await this.adImageRepository.findOneBy({ id, fieldName: 'main' });
     if (!profileImage) throw new NotFoundException(`Imagen con id:${id} no encontrada`)
@@ -35,7 +36,7 @@ export class AdImageService {
     return await this.adImageRepository.find({ where: { ad: { id: adId } } })
   }
 
-  private async findAllAdImagesByAdId(adId: string) {
+  public async findAllAdImagesByAdId(adId: string) {
     return await this.adImageRepository.find({
       where: {
         ad: { id: adId },

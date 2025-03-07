@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AdImageService } from './ad-image.service';
 import { AdImageController } from './ad-image.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,12 +8,12 @@ import { S3Module } from 'src/s3/s3.module';
 
 @Module({
   imports:[
-    AdModule,
+    forwardRef(()=>AdModule),
     TypeOrmModule.forFeature([AdImage]),
     S3Module
   ],
   controllers: [AdImageController],
   providers: [AdImageService],
-  exports:[ TypeOrmModule ]
+  exports:[ TypeOrmModule, AdImageService ]
 })
 export class AdImageModule {}

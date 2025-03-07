@@ -3,7 +3,7 @@ import { IsInt, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPositive, Is
 
 export class AdSearchFilterDto {
 
-    @IsNumber({}, {message:'El parametro lng debe ser un numero entero válido'})
+    @IsNumber({}, {message:'El parametro lat debe ser un numero entero válido'})
     @Transform(({ value} ) =>  Number(value) )
     lat:number;
 

@@ -30,37 +30,45 @@ export class AdService {
 
   //TODO: filtro de tipo de propiedad y periodo de facturacion
   async findAll(filter: AdSearchFilterDto) {
-    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period="Mensual" } = filter;
+    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period = "Mensual" } = filter;
 
     try {
       let query = this.adRepository.createQueryBuilder('ad')
+        //.leftJoinAndSelect('ad.images', 'images')
         .innerJoinAndSelect('ad.period', 'p')
-        .innerJoinAndSelect('ad.propertyType', 'pt')
+        .leftJoinAndSelect('ad.propertyType', 'pt')
+        .leftJoinAndSelect('ad.user', 'owner') 
         .select([
-          'ad.id',
-          'ad.name',
-          'ad.price',
-          'ad.location_city as ad_location_city',
-          'ad.address',
-          'ad.currency',
-          'ad.rooms',
-          'ad.bathrooms',
-          'ad.square_meters as ad_square_meters',
-          'ad.furnished',
-          'ad.coords',
-          'p.name as ad_period',
-          'pt.name as ad_property_type',
+          'ad.id AS id',
+          'ad.name AS name',
+          'ad.price AS price',
+          'ad.locationCity AS location_city',
+          'ad.address AS address',
+          'ad.currency AS currency',
+          'ad.rooms AS rooms',
+          'ad.bathrooms AS rooms',
+          'ad.squareMeters AS square_meters',
+          'ad.furnished as furnished',
+          'ad.coords AS coords',
+          'owner.names AS owner_names',
+          'owner.lastnames AS owner_lastnames',
+          'owner.id AS owner_id',
+          'owner.profileImage AS owner_image',
+           //'images',
+          'p.name AS period',
+          'pt.name AS property_type',
           `(6371 * ACOS(
         COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
         COS(RADIANS((ad.coords->>'lng')::DOUBLE PRECISION) - RADIANS(:lng)) + 
         SIN(RADIANS(:lat)) * SIN(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION))
-      )) AS ad_distance` 
-      ])
+      )) AS distance`
+        ])
 
-      if ( minPrice !== undefined) {   query.andWhere('ad.price >= :minPrice', { minPrice: minPrice });  }
-      if ( maxPrice !== undefined) {   query.andWhere('ad.price <= :maxPrice', { maxPrice: maxPrice }); } 
-      if(propertyType !== undefined){query.andWhere('pt.name = :propertyType', {propertyType:propertyType}) }
-      if(period !== undefined){query.andWhere('p.name = :period', {period:period}) }
+
+      if (minPrice !== undefined) { query.andWhere('ad.price >= :minPrice', { minPrice: minPrice }); }
+      if (maxPrice !== undefined) { query.andWhere('ad.price <= :maxPrice', { maxPrice: maxPrice }); }
+      if (propertyType !== undefined) { query.andWhere('pt.name = :propertyType', { propertyType: propertyType }) }
+      if (period !== undefined) { query.andWhere('p.name = :period', { period: period }) }
 
       return await query.andWhere(`(6371 * ACOS(
         COS(RADIANS(:lat)) * COS(RADIANS((ad.coords->>'lat')::DOUBLE PRECISION)) * 
@@ -72,10 +80,10 @@ export class AdService {
         })
         .setParameter('lng', lng)
         .setParameter('lat', lat)
-        .orderBy('ad_distance', 'ASC')
+        .orderBy('distance', 'ASC')
         .addOrderBy('ad.price', 'ASC')
         .limit(limit)
-        .getRawMany();
+        .getRawMany()
 
     } catch (error) {
       this.logger.error(error)
@@ -89,26 +97,26 @@ export class AdService {
 
   async findAllAdIdsByUserId(id: string) {
     return await this.adRepository.find({
-      where:{  user: { id }  },
-      select:{ id:true}
+      where: { user: { id } },
+      select: { id: true }
     })
   }
 
-  
+
   async findOne(id: string) {
-    const ad = await this.adRepository.findOne({ where:{id}, loadRelationIds:{ relations: ['user']}});
+    const ad = await this.adRepository.findOne({ where: { id }, loadRelationIds: { relations: ['user'] } });
     if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
     return ad;
   }
 
 
-  async update(id: string, updateAdDto: UpdateAdDto, user:User) {
+  async update(id: string, updateAdDto: UpdateAdDto, user: User) {
     if (Object.keys(updateAdDto).length == 0)
       throw new BadRequestException('No hay ningun campo a actulizar en el cuerpo de la petición');
 
     const ad = await this.findOne(id);
     this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
-    
+
     const { renevaldDate, ...data } = updateAdDto;
 
     if (renevaldDate) {
@@ -124,7 +132,7 @@ export class AdService {
     return await this.adRepository.save({ ...ad, ...data });
   }
 
-  async remove(id: string, user:User) {
+  async remove(id: string, user: User) {
     const ad = await this.findOne(id);
     this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
 
@@ -136,8 +144,8 @@ export class AdService {
     }
   }
 
-  private verifyAdUserPropertyOrUserHasValidRole(ad:Ad, user:User){
-    if((String(ad.user) != user.id) || !user.roles.includes('SUPER_ADMIN')) 
+  private verifyAdUserPropertyOrUserHasValidRole(ad: Ad, user: User) {
+    if ((String(ad.user) != user.id) || !user.roles.includes('SUPER_ADMIN'))
       throw new ForbiddenException(`Lo sentimos ${user.names}, pero no tienes acceso a este recurso`);
   }
 }

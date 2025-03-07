@@ -47,6 +47,10 @@ npm i @aws-sdk/s3-request-presigner     #para generar url de acceso temporal par
 openssl rand -base64 64
 ```
 
+## Modelo Entidad Relación
+<img src="./Comodos-ERD.jpg" width="650" alt="Nest Logo" />
+
+
 ## Notas
 
 1. El modulo common provee servicios para seleccion de ubicación, por ahora solo en Colombia  
