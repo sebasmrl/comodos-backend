@@ -30,7 +30,7 @@ export class AdService {
 
   //TODO: filtro de tipo de propiedad y periodo de facturacion
   async findAll(filter: AdSearchFilterDto) {
-    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period = "Mensual" } = filter;
+    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period = "Mes" } = filter;
 
     try {
       let query = this.adRepository.createQueryBuilder('ad')
@@ -46,7 +46,7 @@ export class AdService {
           'ad.address AS address',
           'ad.currency AS currency',
           'ad.rooms AS rooms',
-          'ad.bathrooms AS rooms',
+          'ad.bathrooms AS bathrooms',
           'ad.squareMeters AS square_meters',
           'ad.furnished as furnished',
           'ad.coords AS coords',
