@@ -43,7 +43,7 @@ export class UserController {
   async findOnePublic(@Param('id', ParseUUIDPipe) id: string) {
     //TODO:extraer rating
     const { names, lastnames, lastConnection, profileImage,   ...rest} = await this.userService.findOneById(id);
-    return {names, lastnames, lastConnection, profileImage};
+    return {id, names, lastnames, lastConnection, profileImage};
   }
 
   @Auth(ValidRoles.SUPER_ADMIN)

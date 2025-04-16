@@ -11,7 +11,7 @@ import { ValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 import { AdImage } from 'src/ad-image/entities/ad-image.entity';
 import { Transaction } from 'typeorm';
 
-@Controller('adds')
+@Controller('ads')
 export class AdController {
   constructor(
     private readonly adService: AdService,

@@ -1,14 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
+import {CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 
 @Injectable()
 export class S3Service {
-
+    
     private readonly s3Client: S3Client;
+    private readonly cloudFrontClient: CloudFrontClient;
+
     constructor(
         @Inject()
         private readonly configService: ConfigService,
@@ -20,6 +23,12 @@ export class S3Service {
                 secretAccessKey: configService.get('AWS_SECRET_KEY')
             }
         })
+        this.cloudFrontClient = new CloudFrontClient({ 
+            region:'us-east-1', 
+            credentials: {
+            accessKeyId: configService.get('AWS_ACCESS_KEY'),
+            secretAccessKey: configService.get('AWS_SECRET_KEY')
+        }})
     }
 
     /**
@@ -40,6 +49,7 @@ export class S3Service {
         //command solo describe las operaciones
         const command = new PutObjectCommand(uploadParams);
         await this.s3Client.send(command);
+        await this.invalidateOneObject( this.configService.get('AWS_CLOUDFRONT_ID_DISTRIBUTION'), `/${fileKey}`)
 
         const result = this.getFileUrl(fileKey);
         return result;
@@ -103,4 +113,30 @@ export class S3Service {
         const rs = await this.s3Client.send(command);
         return rs;
     }
+
+
+
+
+    private invalidateOneObject = async (distributionId:string, objectPathInCloudFront:string) => {
+    const params = {
+        DistributionId: distributionId, // Reemplázalo con tu ID de distribución
+        InvalidationBatch: {
+            CallerReference: `${Date.now()}`,
+            Paths: {
+                Quantity: 1,
+                Items: [objectPathInCloudFront], // Ruta del objeto en CloudFront
+            },
+        },
+    };
+
+    try {
+        const response = await this.cloudFrontClient.send(new CreateInvalidationCommand(params));
+        if(response) return true; 
+    } catch (error) {
+        console.error("Error al invalidar el objeto:", error);
+        throw new InternalServerErrorException(`Error al invalidar el objeto con path: ${objectPathInCloudFront}`)
+    }
+};
+
+
 }

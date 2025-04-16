@@ -41,6 +41,7 @@ npm i -D @types/multer
 
 npm i @aws-sdk/client-s3
 npm i @aws-sdk/s3-request-presigner     #para generar url de acceso temporal para el cliente
+npm i @aws-sdk/client-cloudfront
 
 
 # usar este comando para generar claves de forma automatica
@@ -63,7 +64,7 @@ Lo datos tomados del  [CSV](./src/common/data/Departamentos_y_municipios_de_Colo
 
 
 ## Mantente en contacto
-- Author - [Sebastian Morales](https://sebastianmorales.dev)
+- Autor - [Sebastian Morales](https://sebastianmorales.dev)
 - Linkedin - [Perfil de linkedin](https://www.linkedin.com/in/deivy-sebastian-morales/)
 - Framework - [https://nestjs.com](https://nestjs.com/)
 

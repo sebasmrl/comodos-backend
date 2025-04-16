@@ -19,7 +19,8 @@ export enum FileSubtype {
   presentations = "vnd.openxmlformats-officedocument.presentationml.presentation",
   spreadsheets = "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   plain = 'plain',
-  exe = "x-msdos-program"
+  exe = "x-msdos-program",
+  webp = "webp"
 }
 
 

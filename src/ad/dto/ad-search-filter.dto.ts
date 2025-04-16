@@ -20,6 +20,7 @@ export class AdSearchFilterDto {
     @IsOptional()
     @IsInt({message: 'El parametro limit debe ser un numero entero válido'})
     @Min(1,{ message:'El parametro limit debe ser un numero mayor o igual a 1 '})
+    @Max(30, { message:'El parametro limit debe ser un numero menor a 30    '})
     @Transform(({ value} ) =>  Number(value) )
     limit?: number;
 
