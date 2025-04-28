@@ -50,12 +50,17 @@ export class AdController {
 
   @Get('/user/:id')
   findAllByUser(@Param('id', ParseUUIDPipe) id: string) {
-    return this.adService.findAllAddsByUserId(id);
+    return this.adService.findAllAdsByUserId(id);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.adService.findOne(id);
+  }
+  
+  @Get('complete/:id')
+  findOneComplete(@Param('id') id: string) {
+    return this.adService.findOneComplete(id);
   }
 
   @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)

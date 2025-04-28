@@ -1,6 +1,8 @@
 import { BadRequestException, Controller, Get, Inject, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { CommonService } from './common.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { ValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 
 @Controller('common')
 export class CommonController {
@@ -10,8 +12,10 @@ export class CommonController {
         @Inject()
         private readonly commonService: CommonService
     ) { }
-
+    
+    
     @Post('csv')
+    @Auth(ValidRoles.SUPER_ADMIN)
     @UseInterceptors(FileInterceptor('csv-file'))
     async uploadCsv(@UploadedFile() file: Express.Multer.File) {
         if (!file) {

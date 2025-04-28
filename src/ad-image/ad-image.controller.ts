@@ -40,7 +40,7 @@ export class AdImageController {
           new AllowedFilesValidator({
             fileTypes: [FileType.image],
             fileSubtypes: [FileSubtype.jpeg, FileSubtype.png, FileSubtype.jpg, FileSubtype.webp],
-            sizeKb: 2000000  //3MB
+            sizeKb: 2500000  //3MB
           })
         ]
       })

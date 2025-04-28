@@ -91,7 +91,7 @@ export class AdService {
     }
   }
 
-  async findAllAddsByUserId(id: string) {
+  async findAllAdsByUserId(id: string) {
     return await this.adRepository.findBy({ user: { id } })
   }
 
@@ -109,6 +109,20 @@ export class AdService {
     return ad;
   }
 
+  async findOneComplete(id: string) {
+    const ad = await this.adRepository.findOne({ 
+      where: { id },
+      loadRelationIds: { relations:['user'] },
+      relations:{
+        propertyType:true,
+        period:true,
+        images:true
+        
+      }  
+    });
+    if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
+    return ad;
+  }
 
   async update(id: string, updateAdDto: UpdateAdDto, user: User) {
     if (Object.keys(updateAdDto).length == 0)
