@@ -94,6 +94,10 @@ export class CreateAdDto {
     @IsBoolean({ message: 'El campo isSharedKitchen debe contener un valor boolean' })
     isSharedKitchen?: boolean;
 
+    @IsOptional()
+    @IsBoolean({ message: 'El campo hasKitchen debe contener un valor boolean' })
+    hasKitchen?: boolean;
+
     @IsBoolean({ message: 'El campo furnished debe contener un valor boolean' })
     furnished: boolean;
 

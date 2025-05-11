@@ -87,6 +87,9 @@ export class UserService {
       return updatedUser;
     }
   }
+
+  //TODO: no actualizar la contraseña cuando este autenticado debe validase 
+  //que sea la contraseña anterior y un codigo via email
   async updateBySelf(user:User, updateUserDto: UpdateUserDto) {
     
     const { password } = updateUserDto;

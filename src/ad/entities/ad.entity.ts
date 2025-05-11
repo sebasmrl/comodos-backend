@@ -5,7 +5,7 @@ import { PropertyType } from "src/property-type/entities/property-type.entity";
 import { User } from "src/user/entities/user.entity";
 import { BeforeUpdate, Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('adds')
+@Entity('ads')
 export class Ad {
 
     @PrimaryGeneratedColumn('uuid')
@@ -71,7 +71,10 @@ export class Ad {
     @Column({name:'administration_cost', type:'decimal', nullable:true})
     adminitrationCost:number;
 
-    @Column({name:'is_shared_kitchen', type:'boolean', nullable:true})
+    @Column({name:'has_kitchen', type:'boolean', default:true})
+    hasKitchen:boolean;
+
+    @Column({name:'is_shared_kitchen', type:'boolean', default:false})
     isSharedKitchen:boolean;
 
     @Column({type:'boolean', default:false})

@@ -10,6 +10,7 @@ import { AdPeriodModule } from './ad-period/ad-period.module';
 import { PropertyTypeModule } from './property-type/property-type.module';
 import { AdImageModule } from './ad-image/ad-image.module';
 import { S3Module } from './s3/s3.module';
+import { SesModule } from './ses/ses.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -35,6 +36,7 @@ import { S3Module } from './s3/s3.module';
     PropertyTypeModule,
     AdImageModule,
     S3Module,
+    SesModule,
   ],
   controllers: [],
   providers: [],
