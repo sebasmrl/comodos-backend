@@ -110,7 +110,7 @@ export class Ad {
     // ----------------- Relations ------------------
     @ManyToOne(
         ()=>User,
-        (user)=>user.adds,
+        (user)=>user.ads,
         { onDelete: "SET NULL" }
     )
     user:User

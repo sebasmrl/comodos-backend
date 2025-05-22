@@ -69,7 +69,7 @@ export class User {
         (ad)=> ad.user,
         { cascade: ["remove"], onDelete:'CASCADE'}
     )
-    adds:Ad[]
+    ads:Ad[]
 
     
     //TODO: Relations

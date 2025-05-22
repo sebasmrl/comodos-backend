@@ -10,11 +10,13 @@ import { AdSearchFilterDto } from './dto/ad-search-filter.dto';
 import { ValidRoles } from 'src/auth/interfaces/valid-roles.interface';
 import { AdImage } from 'src/ad-image/entities/ad-image.entity';
 import { Transaction } from 'typeorm';
+import { UserService } from 'src/user/user.service';
 
 @Controller('ads')
 export class AdController {
   constructor(
     private readonly adService: AdService,
+    private readonly userService:UserService,
     private readonly adImageService: AdImageService,
     private readonly profileImageService:ProfileImageService
   ) { }
@@ -59,8 +61,14 @@ export class AdController {
   }
   
   @Get('complete/:id')
-  findOneComplete(@Param('id') id: string) {
-    return this.adService.findOneComplete(id);
+  async findOneComplete(@Param('id') id: string) {
+    const ad  = await this.adService.findOneComplete(id);
+    const {id:userId, names, lastnames, lastConnection, profileImage} = await this.userService.findOneById(ad.user.id);
+    const user = {id:userId, names, lastnames, lastConnection, profileImage};
+
+    const adWithPublicUserData = {...ad, user:user}
+    return adWithPublicUserData;
+
   }
 
   @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)

@@ -117,7 +117,6 @@ export class AdService {
         propertyType:true,
         period:true,
         images:true
-        
       }  
     });
     if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
@@ -133,6 +132,8 @@ export class AdService {
 
     const { renevaldDate, ...data } = updateAdDto;
 
+    //TODO: necessary validation contraint for renewald attemps
+    //! Change renevaldDate name for renewaldDate on entire project
     if (renevaldDate) {
       if (ad.expiredDate < new Date()) {
         return await this.adRepository.save({
