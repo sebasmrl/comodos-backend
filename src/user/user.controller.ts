@@ -42,15 +42,15 @@ export class UserController {
   @Get('/public-data/:id')
   async findOnePublicData(@Param('id', ParseUUIDPipe) id: string) {
     //TODO:extraer rating
-    const { names, lastnames, lastConnection, profileImage} = await this.userService.findOneById(id);
-    return {id, names, lastnames, lastConnection, profileImage};
+    const { names, lastnames, lastConnection, profileImage, phone, phoneCode,  nationality} = await this.userService.findOneById(id);
+    return {id, names, lastnames, lastConnection, profileImage, phone, phoneCode,  nationality};
   }
 
   @Get('/public-profile/:id')
   async findOnePublicProfile(@Param('id', ParseUUIDPipe) id: string) {
     //TODO:extraer rating
-    const { names, lastnames, lastConnection, profileImage, ads} = await this.userService.findOneById(id);
-    return {id, names, lastnames, lastConnection, profileImage, ads};
+    const { names, lastnames, lastConnection, profileImage, phone, phoneCode,  nationality, ads} = await this.userService.findOneById(id);
+    return {id, names, lastnames, lastConnection, profileImage, phone, phoneCode,  nationality, ads};
   }
 
   @Auth(ValidRoles.SUPER_ADMIN)

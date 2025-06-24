@@ -25,6 +25,8 @@ export class User {
 
     @Column({type:'text'})
     lastnames:string;
+    
+    
 
     @Column({type:'text', enum:['M', 'F'], nullable:true})
     gender:string;
@@ -40,6 +42,15 @@ export class User {
 
     @Column({name:'phone_code',type:'bigint'})
     phoneCode:number;
+    
+    @Column({type:'text', nullable:true})
+    description:string;
+
+    @Column({name:'is_real_state_company',type:'boolean', default:false})
+    isRealStateCompany:boolean;
+
+    @Column({ name:'tax_identification', type:'text', nullable:true})
+    taxIdentification:string;
 
     @Column({name:'last_connection',type:'timestamptz', default:  new Date()})
     lastConnection:Date

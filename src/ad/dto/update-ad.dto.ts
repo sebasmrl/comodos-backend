@@ -15,10 +15,10 @@ export class UpdateAdDto extends PartialType(CreateAdDto) {
     coords?: Coords
 
     
-    @IsOptional()
+   /*  @IsOptional()
     @IsBoolean({message:'El campo renevalDate debe ser un valor boolean'})
-    renevaldDate?: boolean
-    //days*24h*60min*60s*1000ms
+    renewalDate?: boolean
+    //days*24h*60min*60s*1000ms */
 
   
 }

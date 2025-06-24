@@ -92,8 +92,8 @@ export class Ad {
     @Column({name:'has_internet_service_integrated', type:'boolean'})
     hasInternetServiceIntegrated:boolean;
 
-    @Column({name:'reneval_date',type:'timestamptz', default:  new Date()})
-    renevaldDate:Date
+    @Column({name:'renewal_date',type:'timestamptz', default:  new Date()})
+    renewalDate:Date
 
     //days*24h*60min*60s*1000ms
     @Column({name:'expired_date',type:'timestamptz', default:  new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)}) 
@@ -141,8 +141,10 @@ export class Ad {
 
 
     @BeforeUpdate()
-    private beforeUpdate(){
-        this.updateAt = new Date();
+    public beforeUpdate(){
+        if(this.renewalDate == null || this.renewalDate == undefined){
+            this.updateAt = new Date();
+        }
     }
     
 }

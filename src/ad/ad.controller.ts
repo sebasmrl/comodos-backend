@@ -34,17 +34,8 @@ export class AdController {
     const data = await this.adService.findAll(filter);
 
     const rs = Promise.all( data.map(async (ad) => {
-        const { owner_id, owner_image, owner_names, owner_lastnames } = ad;
-        delete ad.owner_id;
-        delete ad.owner_image, 
-        delete ad.owner_names, 
-        delete ad.owner_lastnames;
-
         const images = await this.adImageService.findAllAdImagesByAdId(ad.id);
-        const profileImage = await this.profileImageService.findOneProfileImageFromDB(owner_image);
-        
-        const owner = { id: owner_id, names: owner_names, lastnames: owner_lastnames, profileImage }
-        return { ...ad, images, owner }
+        return { ...ad, images}
       })
     )
     return rs;
@@ -63,8 +54,8 @@ export class AdController {
   @Get('complete/:id')
   async findOneComplete(@Param('id') id: string) {
     const ad  = await this.adService.findOneComplete(id);
-    const {id:userId, names, lastnames, lastConnection, profileImage} = await this.userService.findOneById(ad.user.id);
-    const user = {id:userId, names, lastnames, lastConnection, profileImage};
+    const {id:userId, names, lastnames, lastConnection, profileImage, phone, phoneCode} = await this.userService.findOneById(ad.user.id);
+    const user = {id:userId, names, lastnames, lastConnection, profileImage, phone, phoneCode};
 
     const adWithPublicUserData = {...ad, user:user}
     return adWithPublicUserData;
@@ -77,6 +68,17 @@ export class AdController {
     const user: User = req['user'];
     return await this.adService.update(id, updateAdDto, user);
   }
+  
+  @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
+  @Patch('renewal/:id')
+  async renewalOneAd(@Param('id', ParseUUIDPipe) id: string,  @Req() req: Request) {
+    const user: User = req['user'];
+    return await this.adService.renewalOneAd(id, user);
+  }
+
+
+
+
 
   @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
   @Delete(':id')
