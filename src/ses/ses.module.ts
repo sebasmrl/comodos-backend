@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { SesService } from './ses.service';
 import { SesController } from './ses.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
+  imports: [ConfigModule],
   controllers: [SesController],
   providers: [SesService],
 })

@@ -27,7 +27,7 @@ export class UserService {
     if (!user) throw new InternalServerErrorException('Error al intentar crear modelo de usuario');
 
     try {
-      const {password, ...newUserData} = await this.userRepository.save(user);
+      const {password, state, ...newUserData} = await this.userRepository.save(user);
       return newUserData;
     } catch (e) {
       handlerDbError(e, this.logger)

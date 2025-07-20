@@ -40,6 +40,9 @@ export class AdImageService {
     return await this.adImageRepository.find({
       where: {
         ad: { id: adId },
+      },
+       relations: { 
+        ad:true
       }
     });
   }
@@ -56,22 +59,26 @@ export class AdImageService {
       adImageModel: AdImage;
       file: Express.Multer.File;
     }[] = files.map(file => {
+
       const found = adImagesSaved.filter(adImage => adImage.fieldName == file.fieldname)[0];
       return (found)
         ? {
           adImageModel: this.adImageRepository.create({     //update
             ...found,
+            ad: { id: found.ad.id},
             fieldName: file.fieldname
           }), file: file
         }
         : {
           adImageModel: this.adImageRepository.create({    //create
             ad: { id: adId },
-            key: uuidv5(file.fieldname, user.id),
+            key: uuidv5(`${file.fieldname}.${adId}.${user.id}`, user.id), 
             fieldName: file.fieldname
           }), file: file
         };
-    })
+    });
+
+    
 
     /* //Filtrado para identificar las entidades que no vienen y deben eliminarse 
       *Comentado para no incurrir en operaciones de escritura redundantes en DB y S3

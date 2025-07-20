@@ -42,6 +42,7 @@ npm i -D @types/multer
 npm i @aws-sdk/client-s3
 npm i @aws-sdk/s3-request-presigner     #para generar url de acceso temporal para el cliente
 npm i @aws-sdk/client-cloudfront
+npm i @aws-sdk/client-ses
 
 
 # usar este comando para generar claves de forma automatica
