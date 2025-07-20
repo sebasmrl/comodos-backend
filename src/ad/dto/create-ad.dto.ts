@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUUID, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUUID, MaxLength, Min, MinLength, ValidateNested } from "class-validator";
 import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
 import { PropertyType } from "src/property-type/entities/property-type.entity";
@@ -87,7 +87,7 @@ export class CreateAdDto {
 
     @IsOptional()
     @IsNumber({}, { message: 'El campo administrationCost debe ser un numero válido' })
-    @IsPositive({ message: 'El campo administrationCost debe ser un número positivo' })
+    @Min(0,{ message: 'El campo administrationCost debe ser un número positivo' })
     administrationCost?: number;
 
     @IsOptional()
