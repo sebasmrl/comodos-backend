@@ -1,4 +1,4 @@
-import { Controller, Get, Post,Param,  ParseUUIDPipe, UseInterceptors, ParseFilePipe, UploadedFiles, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post,Param,  ParseUUIDPipe, UseInterceptors, ParseFilePipe, UploadedFiles, Delete, Req, Body } from '@nestjs/common';
 import { FileFieldsInterceptor} from '@nestjs/platform-express';
 import { AdImageService } from './ad-image.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
@@ -66,8 +66,17 @@ export class AdImageController {
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string, @Req() req:Request) {
     const user:User = req['user'];
-    return await this.adImageService.remove(id, user);
+    return await this.adImageService.removeOne(id, user);
   }
+
+  @Auth()
+  @Delete('ad/:id')
+  async deleteMany(@Param('id', ParseUUIDPipe) id: string, req:Request) {
+    const user:User = req['user'];
+    return await this.adImageService.removeAllAdImagesByAdId(id, user);
+  }
+
+
 
 
 

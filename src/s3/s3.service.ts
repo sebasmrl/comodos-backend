@@ -1,7 +1,7 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectsCommand, DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
 import {CloudFrontClient, CreateInvalidationCommand } from "@aws-sdk/client-cloudfront";
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -76,6 +76,21 @@ export class S3Service {
         const command = new DeleteObjectCommand({
             Bucket: this.configService.get(envVariableBucketName),
             Key: fileKey,
+        });
+        await this.s3Client.send(command);
+        return true;
+    }
+
+    async deleteFiles( 
+        { fileKeys, envVariableBucketName= 'AWS_BUCKET_NAME'} : {fileKeys:string[], envVariableBucketName?: string }
+    ){
+        const command =  new DeleteObjectsCommand({
+             Bucket: this.configService.get(envVariableBucketName),
+             Delete:{
+                Objects: [
+                    ...fileKeys.map(key=> ({Key:key}))
+                ]
+             }
         });
         await this.s3Client.send(command);
         return true;

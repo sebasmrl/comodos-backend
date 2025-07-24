@@ -1,6 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateAdImageDto } from './create-ad-image.dto';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateAdImageDto {
 

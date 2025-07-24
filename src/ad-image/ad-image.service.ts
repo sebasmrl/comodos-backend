@@ -15,7 +15,7 @@ export class AdImageService {
     @InjectRepository(AdImage)
     private readonly adImageRepository: Repository<AdImage>,
     private readonly adService: AdService,
-    private readonly s3Service:S3Service
+    private readonly s3Service: S3Service
   ) { }
 
   async findOne(id: string) {
@@ -32,7 +32,7 @@ export class AdImageService {
   }
 
   async findAllAdImagesByAdIdWithVerification(adId: string, user: User) {
-    await this.verifyAdIsUserProperty(adId, user);
+    await this.adService.verifyAdsIsUserProperty({ ids: [adId], user });
     return await this.adImageRepository.find({ where: { ad: { id: adId } } })
   }
 
@@ -41,15 +41,15 @@ export class AdImageService {
       where: {
         ad: { id: adId },
       },
-       relations: { 
-        ad:true
+      relations: {
+        ad: true
       }
     });
   }
 
 
-  async   createOrUpdate(files: Express.Multer.File[], adId: string, user: User) {
-    await this.verifyAdIsUserProperty(adId, user);
+  async createOrUpdate(files: Express.Multer.File[], adId: string, user: User) {
+    await this.adService.verifyAdsIsUserProperty({ ids: [adId], user });
 
     // Imagenes de un anuncio guardadas con anterioridad
     const adImagesSaved = await this.findAllAdImagesByAdId(adId);
@@ -65,20 +65,20 @@ export class AdImageService {
         ? {
           adImageModel: this.adImageRepository.create({     //update
             ...found,
-            ad: { id: found.ad.id},
+            ad: { id: found.ad.id },
             fieldName: file.fieldname
           }), file: file
         }
         : {
           adImageModel: this.adImageRepository.create({    //create
             ad: { id: adId },
-            key: uuidv5(`${file.fieldname}.${adId}.${user.id}`, user.id), 
+            key: uuidv5(`${file.fieldname}.${adId}.${user.id}`, user.id),
             fieldName: file.fieldname
           }), file: file
         };
     });
 
-    
+
 
     /* //Filtrado para identificar las entidades que no vienen y deben eliminarse 
       *Comentado para no incurrir en operaciones de escritura redundantes en DB y S3
@@ -107,8 +107,8 @@ export class AdImageService {
 
 
 
-  async remove(id: string, user: User) {
-    await this.verifyAdIsUserProperty(id, user);
+  async removeOne(id: string, user: User) {
+    await this.adService.verifyAdsIsUserProperty({ ids: [id], user });
     const adImage = await this.findOne(id);
 
     try {
@@ -123,11 +123,30 @@ export class AdImageService {
   }
 
 
-  private async verifyAdIsUserProperty(id:string, user:User):Promise<boolean>{
-    const adIds = (await this.adService.findAllAdIdsByUserId(user.id)).map(ad => ad.id); //ids de anuncios del usuario
-    if (adIds.length > 0) {
-      if (!adIds.includes(id)) throw new ForbiddenException('No tienes acceso a la modificacion de este recurso');
-    }
-    return true;
+  async removeAllAdImagesByAdId(adId: string, user: User) {
+
+    await this.adService.verifyAdsIsUserProperty({
+      ids: [adId],
+      user
+    })
+
+    const adImages = await this.findAllAdImagesByAdId(adId);
+
+    const rs = await this.removeManyAdImageFiles(
+      adImages.map(adImage => adImage.key)
+    );
+    return rs;
   }
+
+  
+  async removeManyAdImageFiles(fileKeys: string[]) {
+    try {
+      const rs = await this.s3Service.deleteFiles({ fileKeys });
+      return rs;
+    } catch (e) {
+      return false;
+    }
+  }
+
+
 }

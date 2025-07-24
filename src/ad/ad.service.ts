@@ -165,7 +165,7 @@ export class AdService {
       await this.adRepository.delete({ id: id })
       return true;
     } catch (e) {
-      throw new InternalServerErrorException(`Ocurrió un errror inesperado, el anuncio con id: ${id} no se pudo eliminar`)
+      throw new InternalServerErrorException(`Ocurrió un error inesperado, el anuncio con id: ${id} no se pudo eliminar`)
     }
   }
 
@@ -189,5 +189,20 @@ export class AdService {
     const userAdsNumber = await this.adRepository.countBy({ user });
     if (userAdsNumber >= 5) throw new ForbiddenException('Ya cuentas con la cuota maxima de 5 anuncios por persona')
     return userAdsNumber;
+  }
+
+
+
+   async verifyAdsIsUserProperty( {ids, user}:{ids:string[], user:User}):Promise<boolean>{
+    const adIds = (await this.findAllAdIdsByUserId(user.id)).map(ad => ad.id); //ids de anuncios del usuario
+
+    if (adIds.length > 0) {
+      ids.forEach( adId => {
+        if (!adIds.includes(adId)) throw new ForbiddenException('No tienes acceso a la modificacion de los recursos especificados');
+      })
+    }else{
+      throw new BadRequestException('Recursos inexistentes');
+    }
+    return true;
   }
 }
