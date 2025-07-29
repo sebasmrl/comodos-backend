@@ -110,14 +110,16 @@ export class AdService {
   async findOneComplete(id: string) {
     const ad = await this.adRepository.findOne({
       where: { id },
-      loadRelationIds: { relations: ['user'] },
+      //loadRelationIds: { relations: ['user'] },
       relations: {
         propertyType: true,
         period: true,
-        images: true
+        images: true,
+        user:true
       }
     });
     if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
+    
     return ad;
   }
 
@@ -128,8 +130,8 @@ export class AdService {
     const ad = await this.findOne(id);
     this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
 
-    const { ...data } = updateAdDto;
-    return await this.adRepository.save({ ...ad, ...data });
+    const { ...data  } = updateAdDto;
+    return await this.adRepository.save({ ...ad, ...data, updateAt: new Date() });
   }
 
 

@@ -1,5 +1,6 @@
+import { UpdatePasswordRepeatMethodDto } from './dto/update-password-repeat-method.dto';
 import { PaginationDto } from './../common/dto/pagination.dto';
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
@@ -27,7 +28,7 @@ export class UserService {
     if (!user) throw new InternalServerErrorException('Error al intentar crear modelo de usuario');
 
     try {
-      const {password, state, ...newUserData} = await this.userRepository.save(user);
+      const { password, state, ...newUserData } = await this.userRepository.save(user);
       return newUserData;
     } catch (e) {
       handlerDbError(e, this.logger)
@@ -49,17 +50,17 @@ export class UserService {
       take: limit
     });
 
-    const result = users.map( user=>{
-      const {password, ...data} = user;
+    const result = users.map(user => {
+      const { password, ...data } = user;
       return data;
-    } )
+    })
     //fecha: {   from: LessThan(new Date()),  to: MoreThan(new Date()) }
     return result;
   }
 
 
   async findOneById(id: string) {
-    const user = await this.userRepository.findOne({ where:{ id},  relations:{ ads:true} } );
+    const user = await this.userRepository.findOne({ where: { id }, relations: { ads: true } });
     if (!user) throw new NotFoundException(`Usuario con id: ${id} no encontrado`)
     return user;
   }
@@ -78,7 +79,7 @@ export class UserService {
     const { password } = updateUserDto;
 
     if (!password) {
-      return await this.userRepository.save({...user, ...updateUserDto});
+      return await this.userRepository.save({ ...user, ...updateUserDto });
     } else {
       const encriptedPassword = await bcrypt.hash(updateUserDto.password, 10)
       const updatedUser = await this.userRepository.save({
@@ -88,28 +89,36 @@ export class UserService {
     }
   }
 
-  //TODO: no actualizar la contraseña cuando este autenticado debe validase 
-  //que sea la contraseña anterior y un codigo via email
-  async updateBySelf(user:User, updateUserDto: UpdateUserDto) {
-    
-    const { password } = updateUserDto;
 
-    if (!password) {
-      return await this.userRepository.save({...user, ...updateUserDto});
-    } else {
-      const encriptedPassword = await bcrypt.hash(updateUserDto.password, 10)
-      const updatedUser = await this.userRepository.save({
-        ...user, ...updateUserDto, password: encriptedPassword
-      });
-      return updatedUser;
+  async updateBySelf(user: User, updateUserDto: UpdateUserDto) {
+    const { password, ...data } = updateUserDto;
+    const updatedUser = await this.userRepository.save({ ...user, ...data });
+    const { password: pass, ...restData } = updatedUser;
+    return restData;
+  }
+
+
+  async updatePasswordRepeatMethodBySelf(user: User, updatePasswordRepeatMethodDto: UpdatePasswordRepeatMethodDto) {
+    const comparation = await bcrypt.compare(updatePasswordRepeatMethodDto.currentPassword, user.password)
+    if (!comparation) throw new UnauthorizedException('Tu contraseña actual no es correcta');
+
+    const encriptedPassword = await bcrypt.hash(updatePasswordRepeatMethodDto.newPassword, 10);
+    if (!encriptedPassword) throw new InternalServerErrorException('Error al intentar cambiar la contraseña');
+    
+    try {
+      const userWithPasswordUpdated = await this.userRepository.save({ ...user, password: encriptedPassword });
+      if (userWithPasswordUpdated) return true;
+    } catch (e) {
+      return false;
     }
+    return false;
   }
 
 
   async updateLastConnection(id: string) {
     const user = await this.findOneById(id);
     try {
-     const {lastConnection }= await this.userRepository.save({ ...user, lastConnection: new Date() })
+      const { lastConnection } = await this.userRepository.save({ ...user, lastConnection: new Date() })
       return lastConnection;
     } catch (e) {
       handlerDbError(e, this.logger);
@@ -123,21 +132,21 @@ export class UserService {
     return false;
   }
 
-  async removeBySelf(user:User) {
-    const { affected } = await this.userRepository.update({ id:user.id }, { state: false })
+  async removeBySelf(user: User) {
+    const { affected } = await this.userRepository.update({ id: user.id }, { state: false })
     if (affected) return true;
     return false;
   }
 
 
- 
+
   async findOneByEmail(email: string) {
     const user = await this.userRepository.findOne({
       where: { email }
     });
-    if(!user) throw new NotFoundException(`Usuario con email: ${email} no encontrado`)
+    if (!user) throw new NotFoundException(`Usuario con email: ${email} no encontrado`)
     return user;
   }
 
- 
+
 }

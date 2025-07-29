@@ -71,7 +71,7 @@ export class AdImageController {
 
   @Auth()
   @Delete('ad/:id')
-  async deleteMany(@Param('id', ParseUUIDPipe) id: string, req:Request) {
+  async deleteMany(@Param('id', ParseUUIDPipe) id: string, @Req() req:Request) {
     const user:User = req['user'];
     return await this.adImageService.removeAllAdImagesByAdId(id, user);
   }

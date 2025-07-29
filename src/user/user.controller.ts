@@ -1,3 +1,4 @@
+import { UpdatePasswordRepeatMethodDto } from './dto/update-password-repeat-method.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, ParseUUIDPipe, ParseIntPipe, Query, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -65,6 +66,15 @@ export class UserController {
     const user:User = req['user'];
     return this.userService.updateBySelf(user, updateUserDto);
   }
+
+  @Auth(ValidRoles.USER)
+  @Patch('password/repeat-method')
+  async updatePasswordRepeatMethod(@Body() updatePasswordByRepeatMethodDto:UpdatePasswordRepeatMethodDto, @Req() req:Request){
+    const user:User = req['user'];
+    return this.userService.updatePasswordRepeatMethodBySelf(user, updatePasswordByRepeatMethodDto);
+  }
+
+
 
   @Auth(ValidRoles.SUPER_ADMIN)
   @Delete('admin/:id')
