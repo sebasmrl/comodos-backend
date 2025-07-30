@@ -14,7 +14,7 @@ export class CreateAdDto {
 
     @IsString({ message: 'El campo description debe ser una cadena de carateres' })
     @MinLength(50, { message: 'EL campo description debe contener al menos 50 caracteres' })
-    @MaxLength(500, { message: 'EL campo description debe ser menor o igual a 500 caracteres' })
+    @MaxLength(1500, { message: 'EL campo description debe ser menor o igual a 1500 caracteres' })
     description: string;
 
     @IsString({ message: 'El campo locationCountry debe ser una cadena de caracteres' })

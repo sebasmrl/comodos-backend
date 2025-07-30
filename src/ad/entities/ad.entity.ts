@@ -14,7 +14,7 @@ export class Ad {
     @Column({type:'varchar', length:50})
     name:string;
 
-    @Column({type:'varchar', length:500})
+    @Column({type:'varchar', length:1500}, )
     description:string;
 
     @Column({ type:'jsonb'})

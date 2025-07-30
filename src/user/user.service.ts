@@ -91,10 +91,14 @@ export class UserService {
 
 
   async updateBySelf(user: User, updateUserDto: UpdateUserDto) {
-    const { password, ...data } = updateUserDto;
-    const updatedUser = await this.userRepository.save({ ...user, ...data });
-    const { password: pass, ...restData } = updatedUser;
-    return restData;
+    const { password, ...data } = updateUserDto;    
+    try {
+       const updatedUser = await this.userRepository.save({ ...user, ...data });
+      if (updatedUser) return true;
+    } catch (e) {
+      return false;
+    }
+    return false;
   }
 
 

@@ -21,6 +21,11 @@
   },
   "include": [
     "src/**/*",
-    "src/**/*.json",
+    "src/**/*.json", "migrations",
+  ],
+  "exclude": [
+    "migrations/**/*",
+    "test",
+    "**/*.spec.ts"
   ]
 }

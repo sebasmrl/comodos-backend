@@ -26,7 +26,7 @@ export class ProfileImageService {
         url = await this.s3Service.uploadFile(file, user.profileImage.id);
         return {
           id: user.profileImage.id,
-          key: user.profileImage.id, 
+          key: user.profileImage.id,
           url: url
         }
       }
@@ -57,10 +57,12 @@ export class ProfileImageService {
 
   async remove(id: string, user: User) {
     const profileImage = await this.findOneProfileImageFromDB(id);
-    if (profileImage.id != user.profileImage.id) throw new ForbiddenException('No tienes acceso a la modificación de este recurso')
+    if (profileImage.id != user?.profileImage?.id) throw new ForbiddenException('No tienes acceso a la modificación de este recurso')
+    if (profileImage?.key == undefined || profileImage?.key == null) throw new NotFoundException('No hay ninguna imagen de perfil guardada con anterioridad')
+      
     try {
       const { affected } = await this.profileImageRepository.update({ id: profileImage.id }, { key: null })
-      const deletedfromS3 = await this.s3Service.deleteFile(id);
+      const deletedfromS3 = await this.s3Service.deleteFile(profileImage.key);
       if (affected > 0 && deletedfromS3) return true;
     } catch (e) {
       this.logger.error(e);

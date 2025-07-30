@@ -10,7 +10,7 @@ export class UpdateUserDto {
     @MinLength(10, { message: 'El campo password debe contener mínimo 10 caracteres' })
     @Matches(
         /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: 'El campo password debe contener al menos una letra mayúscula, una letra minússcula y un numero'
+        message: 'El campo password debe contener al menos una letra mayúscula, una letra minúscula y un numero'
     })
     password?: string;
 

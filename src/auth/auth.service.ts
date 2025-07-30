@@ -26,11 +26,17 @@ export class AuthService {
 
         const lastConnection = await this.userService.updateLastConnection(data.id);
         data.lastConnection = lastConnection;
-        const accessToken = this.jwtService.sign({ id:data.id} ); //por defecto es 15min
+        const accessToken = this.jwtService.sign(
+            { id:data.id},
+            { 
+                expiresIn:'31m', 
+                secret: this.configService.get('JWT_SECRET')  
+            }
+        ); //por defecto es 15min
         const refreshToken = this.jwtService.sign(
             { id:data.id }, 
             { 
-                expiresIn:'20m', 
+                expiresIn:'31m', 
                 secret: this.configService.get('REFRESH_JWT_SECRET') 
             }
         );
@@ -51,7 +57,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(
             { id:id }, 
             {   
-                expiresIn:'3h', 
+                expiresIn:'31m', 
                 secret: this.configService.get('REFRESH_JWT_SECRET') 
             }
         );

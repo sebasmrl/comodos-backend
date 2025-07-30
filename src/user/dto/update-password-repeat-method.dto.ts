@@ -8,7 +8,7 @@ export class UpdatePasswordRepeatMethodDto {
     @MinLength(10, { message: 'El campo currentPassword debe contener mínimo 10 caracteres' })
     @Matches(
         /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: 'El campo currentPassword debe contener al menos una letra mayúscula, una letra minússcula y un numero'
+        message: 'El campo currentPassword debe contener al menos una letra mayúscula, una letra minúscula y un numero'
     })
     currentPassword: string;
 
@@ -16,7 +16,7 @@ export class UpdatePasswordRepeatMethodDto {
     @MinLength(10, { message: 'El campo newPassword debe contener mínimo 10 caracteres' })
     @Matches(
         /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: 'El campo newPassword debe contener al menos una letra mayúscula, una letra minússcula y un numero'
+        message: 'El campo newPassword debe contener al menos una letra mayúscula, una letra minúscula y un numero'
     })
     newPassword: string;
 }

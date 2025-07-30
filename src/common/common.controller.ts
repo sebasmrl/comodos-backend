@@ -25,13 +25,14 @@ export class CommonController {
         return results;
     }
 
-
+    //INFO: Se coloca autenticación de solo acceso Admin para proteger rutas que aún no se plantean usar
+    @Auth(ValidRoles.SUPER_ADMIN)
     @Get('/countries')
     async findAllCountries() {
         return this.commonService.findAllCountries();
     }
 
-    
+    @Auth(ValidRoles.SUPER_ADMIN)
     @Get('/countries/country/:countryId')
     async findStatesByCountryId(
         @Param('countryId', ParseIntPipe) countryId: number
@@ -39,7 +40,7 @@ export class CommonController {
         return this.commonService.findAllStatesByCountryId(countryId);
     }
 
-
+    @Auth(ValidRoles.SUPER_ADMIN)
     @Get('/countries/country/:countryId/state/:stateId')
     async findCitiesByStateId(
         @Param('countryId', ParseIntPipe) countryId: number,
@@ -48,7 +49,7 @@ export class CommonController {
         return this.commonService.findAllCitiesByStateId({ countryId, stateId });
     }
 
-
+    @Auth(ValidRoles.SUPER_ADMIN)
     @Get('/countries/country/:countryId/state/:stateId/city/:cityId')
     async findCityId(
         @Param('countryId', ParseIntPipe) countryId: number,
