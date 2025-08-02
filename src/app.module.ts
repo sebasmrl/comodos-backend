@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,6 +12,8 @@ import { AdImageModule } from './ad-image/ad-image.module';
 import { S3Module } from './s3/s3.module';
 import { SesModule } from './ses/ses.module';
 import { typeOrmConfig } from './typeorm.config';
+import { AppController } from './app.controller';
+import { CorsMiddleware } from './middleware/cors/cors.middleware';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -38,10 +40,16 @@ import { typeOrmConfig } from './typeorm.config';
     S3Module,
     SesModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
-export class AppModule { }
+export class AppModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(CorsMiddleware)
+      .forRoutes('health');
+  }
+} 
 
 
 
