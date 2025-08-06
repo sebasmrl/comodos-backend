@@ -44,11 +44,11 @@ import { CorsMiddleware } from './middleware/cors/cors.middleware';
   providers: [],
 })
 export class AppModule{
-  configure(consumer: MiddlewareConsumer) {
+  /* configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CorsMiddleware)
       .forRoutes('health');
-  }
+  } */
 } 
 
 

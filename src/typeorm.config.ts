@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { registerAs } from "@nestjs/config";
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
@@ -9,11 +10,14 @@ import { PropertyType } from "src/property-type/entities/property-type.entity";
 import { User } from "src/user/entities/user.entity";
 
 
-
 export const typeOrmConfig = registerAs(
     'typeorm.config',
     (): TypeOrmModuleOptions => ({
         type: 'postgres',
+        ssl: {
+            ca: process.env.RDS_CA_CERT?.replace(/\\n/g, '\n'),
+            rejectUnauthorized: true
+        }, //false; //development 
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT),
         database: process.env.DB_NAME,
@@ -22,7 +26,7 @@ export const typeOrmConfig = registerAs(
         entities: [User, Ad, AdImage, ProfileImage, PropertyType, AdPeriod],
         //entities: ['./src/*/entities/*.entity.ts'],
         migrations: ['migrations/*{.ts,.js}'],
-        synchronize: false,
+        synchronize: true,
         logging: true,
     })
 );
