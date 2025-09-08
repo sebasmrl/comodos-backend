@@ -100,7 +100,7 @@ export class Ad {
     expiredDate:Date
 
     @Column({name:'updated_at',type:'timestamptz', default:  new Date()})
-    updateAt:Date
+    updatedAt:Date
 
     @Column({name:'created_at',type:'timestamptz', default:  new Date()})
     createdAt:Date
@@ -143,7 +143,7 @@ export class Ad {
     @BeforeUpdate()
     public beforeUpdate(){
         if(this.renewalDate == null || this.renewalDate == undefined){
-            this.updateAt = new Date();
+            this.updatedAt = new Date();
         }
     }
     

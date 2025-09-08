@@ -20,12 +20,21 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
+  @Auth(ValidRoles.SUPER_ADMIN)
   @Get()
   findAll(@Query() paginationDto:PaginationDto, @Req() req:Request) {
     return this.userService.findAll(paginationDto);
   }
 
+  @Auth(ValidRoles.USER)
+  @Get('coords')
+  async getUserCoords(@Req() req:Request) {
+    const user:User = req['user']
+    const coords =user.coords;
+    return coords;
+  }
+
+  
   @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
@@ -34,9 +43,9 @@ export class UserController {
   }
 
   @Auth(ValidRoles.USER, ValidRoles.SUPER_ADMIN)
-  @Get('/dni/:dni')
-  async findOneByDni(@Param('dni', ParseIntPipe) id: number) {
-    const {password, ...result} = await this.userService.findOneByDni(id);
+  @Get('/email/:email')
+  async findOneByEmail(@Param('email') email: string) {
+    const {password, ...result} = await this.userService.findOneByEmail(email);
     return result;
   }
 

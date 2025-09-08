@@ -27,7 +27,7 @@ export const typeOrmConfig = registerAs(
         //entities: ['./src/*/entities/*.entity.ts'],
         migrations: ['migrations/*{.ts,.js}'],
         synchronize: true,
-        logging: true,
+        logging: false,
     })
 );
 

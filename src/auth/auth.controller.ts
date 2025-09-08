@@ -32,7 +32,7 @@ export class AuthController {
     if(!user) throw new InternalServerErrorException('Ruta debe ser privada, necesita mantenimiento') 
 
     const  { accessToken, refreshToken} = await this.authService.refresh(user.id); 
-    const { password, dni, birthdate, gender, nationality, phone, phoneCode, ...data} = user;     
+    const { password, birthdate, gender, nationality, phone, phoneCode, ...data} = user;     
 
     return {
       user:{...data},

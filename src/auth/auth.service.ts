@@ -19,7 +19,7 @@ export class AuthService {
 
 
     async login(loginDto:LoginDto){
-        const { password, dni, birthdate, gender, nationality, phone, phoneCode, ...data} 
+        const { password, birthdate, gender, nationality, phone, phoneCode, ...data} 
                                     = await this.userService.findOneByEmail(loginDto.email);
         const comparation = await bcrypt.compare(loginDto.password, password)
         if(!comparation) throw new UnauthorizedException('Contraseña incorrecta, acceso denegado')
@@ -29,7 +29,7 @@ export class AuthService {
         const accessToken = this.jwtService.sign(
             { id:data.id},
             { 
-                expiresIn:'31m', 
+                expiresIn:'16m', 
                 secret: this.configService.get('JWT_SECRET')  
             }
         ); //por defecto es 15min
@@ -57,7 +57,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(
             { id:id }, 
             {   
-                expiresIn:'31m', 
+                expiresIn:'35m', 
                 secret: this.configService.get('REFRESH_JWT_SECRET') 
             }
         );

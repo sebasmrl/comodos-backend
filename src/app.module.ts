@@ -14,6 +14,7 @@ import { SesModule } from './ses/ses.module';
 import { typeOrmConfig } from './typeorm.config';
 import { AppController } from './app.controller';
 import { CorsMiddleware } from './middleware/cors/cors.middleware';
+import { BlockDirectAccessMiddleware } from './middleware/cors/blokedDirectAccess.middleware';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -44,6 +45,11 @@ import { CorsMiddleware } from './middleware/cors/cors.middleware';
   providers: [],
 })
 export class AppModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(BlockDirectAccessMiddleware)
+      .forRoutes('*');
+  }
   /* configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CorsMiddleware)

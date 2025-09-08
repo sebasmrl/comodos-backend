@@ -92,16 +92,16 @@ export class AdImageService {
 
 
     const imageFilesUpdated = await this.adImageRepository.save(imagesToUpdate.map(img => img.adImageModel));
-    await Promise.all([
+    await Promise.all(
       imagesToUpdate.map((img => {
         const promise = async () => {
           return await this.s3Service.uploadFile(img.file, img.adImageModel.key)
         }
         return promise();
       }))
-    ])
+    )
 
-    return ({ ipdatedImages: imageFilesUpdated });
+    return ({ updatedImages: imageFilesUpdated });
   }
 
 

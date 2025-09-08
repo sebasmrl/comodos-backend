@@ -1,11 +1,9 @@
 import { Transform } from "class-transformer";
-import { IsDate, IsEmail, IsIn, IsInt, IsNumber, IsOptional, IsPositive, IsString, Matches, Max, maxLength, MaxLength, MinLength } from "class-validator";
+import { IsDate, IsEmail, IsIn, IsInt, IsOptional, IsPositive, IsString, Matches, Max, MaxLength, MinLength } from "class-validator";
 
 export class CreateUserDto {
 
-    @IsInt({message:'El campo dni debe ser un valor numerico entero'})
-    @IsPositive({ message:'El campo dni deber ser un valor positivo'})
-    dni: number;
+    
 
     @IsEmail({},{message:'El campo email debe ser un email valido'})
     email: string;
@@ -29,7 +27,7 @@ export class CreateUserDto {
     @MaxLength(30)
     lastnames: string;
 
-    @IsString({message:'El campo gender no puede ser vacio'})
+    @IsString({message:'El campo gender debe ser una cadena de carecteres'})
     @IsIn(['M','F'], { message:'El campo gender debe ser un caracter que esté en [M,F]'})
     @IsOptional()
     gender: string;

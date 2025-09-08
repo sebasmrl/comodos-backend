@@ -30,7 +30,6 @@ export class AdService {
   }
 
 
-  //TODO: filtro de tipo de propiedad y periodo de facturacion
   async findAll(filter: AdSearchFilterDto) {
     const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period } = filter;
 
@@ -51,6 +50,7 @@ export class AdService {
           'ad.squareMeters AS square_meters',
           'ad.furnished as furnished',
           'ad.coords AS coords',
+          'ad.updatedAt AS updated_at',
           //'images',
           'p.name AS period',
           'pt.name AS property_type',
@@ -102,7 +102,7 @@ export class AdService {
 
 
   async findOne(id: string) {
-    const ad = await this.adRepository.findOne({ where: { id }, loadRelationIds: { relations: ['user'] } });
+    const ad = await this.adRepository.findOne({ where: { id }, relations:{ user:true} });
     if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
     return ad;
   }
@@ -115,23 +115,23 @@ export class AdService {
         propertyType: true,
         period: true,
         images: true,
-        user:true
+        user: true
       }
     });
     if (!ad) throw new NotFoundException(`Anuncio con id: ${id} no encontrado`)
-    
+
     return ad;
   }
 
   async update(id: string, updateAdDto: UpdateAdDto, user: User) {
     if (Object.keys(updateAdDto).length == 0)
-      throw new BadRequestException('No hay ningun campo a actulizar en el cuerpo de la petición');
+      throw new BadRequestException('No hay ningun campo a actualizar en el cuerpo de la petición');
 
     const ad = await this.findOne(id);
     this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
 
-    const { ...data  } = updateAdDto;
-    return await this.adRepository.save({ ...ad, ...data, updateAt: new Date() });
+    const { ...data } = updateAdDto;
+    return await this.adRepository.save({ ...ad, ...data, updatedAt: new Date() });
   }
 
 
@@ -141,10 +141,10 @@ export class AdService {
     this.verifyAdUserPropertyOrUserHasValidRole(ad, user);
 
     const now = new Date();
-    if (ad.expiredDate < now) {
+    if (ad.expiredDate.getTime() < now.getTime()) {
 
       const canRenevalAd = await this.isValidRenevalAdBySuscription(ad.user);
-      if(!canRenevalAd) return false;
+      if (!canRenevalAd) return false;
 
       await this.adRepository.save({
         ...ad,
@@ -172,8 +172,12 @@ export class AdService {
   }
 
   private verifyAdUserPropertyOrUserHasValidRole(ad: Ad, user: User) {
-    if ((String(ad.user) != user.id) || !user.roles.includes('SUPER_ADMIN'))
-      throw new ForbiddenException(`Lo sentimos ${user.names}, pero no tienes acceso a este recurso`);
+    if (ad.user.id != user.id) {
+      if(!user.roles.includes('SUPER_ADMIN')){
+        throw new ForbiddenException(`Lo sentimos ${user.names}, pero no tienes acceso a este recurso`);
+      }
+    }
+    return;
   }
 
 
@@ -195,14 +199,14 @@ export class AdService {
 
 
 
-   async verifyAdsIsUserProperty( {ids, user}:{ids:string[], user:User}):Promise<boolean>{
+  async verifyAdsIsUserProperty({ ids, user }: { ids: string[], user: User }): Promise<boolean> {
     const adIds = (await this.findAllAdIdsByUserId(user.id)).map(ad => ad.id); //ids de anuncios del usuario
 
     if (adIds.length > 0) {
-      ids.forEach( adId => {
+      ids.forEach(adId => {
         if (!adIds.includes(adId)) throw new ForbiddenException('No tienes acceso a la modificacion de los recursos especificados');
       })
-    }else{
+    } else {
       throw new BadRequestException('Recursos inexistentes');
     }
     return true;

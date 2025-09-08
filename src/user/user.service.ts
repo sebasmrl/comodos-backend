@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt'
 import { handlerDbError } from 'src/common/helpers';
+import { Coords } from 'src/common/dto/coords.dto';
 
 @Injectable()
 export class UserService {
@@ -66,11 +67,6 @@ export class UserService {
   }
 
 
-  async findOneByDni(dni: number) {
-    const user = await this.userRepository.findOneBy({ dni });
-    if (!user) throw new NotFoundException(`Usuario con dni: ${dni} no encontrado`)
-    return user;
-  }
 
 
   async updateByAdmin(id: string, updateUserDto: UpdateUserDto) {
@@ -91,9 +87,9 @@ export class UserService {
 
 
   async updateBySelf(user: User, updateUserDto: UpdateUserDto) {
-    const { password, ...data } = updateUserDto;    
+    const { password, ...data } = updateUserDto;
     try {
-       const updatedUser = await this.userRepository.save({ ...user, ...data });
+      const updatedUser = await this.userRepository.save({ ...user, ...data });
       if (updatedUser) return true;
     } catch (e) {
       return false;
@@ -108,7 +104,7 @@ export class UserService {
 
     const encriptedPassword = await bcrypt.hash(updatePasswordRepeatMethodDto.newPassword, 10);
     if (!encriptedPassword) throw new InternalServerErrorException('Error al intentar cambiar la contraseña');
-    
+
     try {
       const userWithPasswordUpdated = await this.userRepository.save({ ...user, password: encriptedPassword });
       if (userWithPasswordUpdated) return true;
@@ -151,6 +147,5 @@ export class UserService {
     if (!user) throw new NotFoundException(`Usuario con email: ${email} no encontrado`)
     return user;
   }
-
 
 }

@@ -11,9 +11,6 @@ export class User {
     @PrimaryGeneratedColumn('uuid')
     id:string;
 
-    @Column({type:'bigint', unique:true})
-    dni:number; 
-
     @Column({type:'text', unique:true})
     email:string;
 
@@ -26,8 +23,6 @@ export class User {
     @Column({type:'text'})
     lastnames:string;
     
-    
-
     @Column({type:'text', enum:['M', 'F'], nullable:true})
     gender:string;
 
