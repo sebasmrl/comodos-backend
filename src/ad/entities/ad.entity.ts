@@ -17,10 +17,10 @@ export class Ad {
     @Column({type:'varchar', length:1500}, )
     description:string;
 
-    @Column({type:'bigint', nullable:true})
+    @Column({type:'bigint'})
     phone:number;
 
-    @Column({name:'phone_code',type:'bigint', nullable:true})
+    @Column({name:'phone_code',type:'bigint'})
     phoneCode:number;
 
     @Column({ type:'jsonb'})
