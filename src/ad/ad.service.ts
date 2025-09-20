@@ -22,11 +22,12 @@ export class AdService {
 
   async create(createAdDto: CreateAdDto, user: User) {
 
-    const userAdsNumber = await this.adsByUserAllowed(user);
+    const isValid = await this.isValidRenevalAdBySuscription(user)
+    if(!isValid.value) throw new ForbiddenException(`Ya cuentas con la cuota maxima de ${isValid.allowedAds} anuncios por persona`)
     const ad = this.adRepository.create({ ...createAdDto, user })
 
     const { user: s, ...result } = await this.adRepository.save(ad);
-    return { ...result, user: s.id, userAddsNumber: userAdsNumber + 1 };
+    return { ...result, user: s.id, userAddsNumber: isValid.activeAds };
   }
 
 
@@ -144,7 +145,7 @@ export class AdService {
     if (ad.expiredDate.getTime() < now.getTime()) {
 
       const canRenevalAd = await this.isValidRenevalAdBySuscription(ad.user);
-      if (!canRenevalAd) return false;
+      if (!canRenevalAd.value) return false;
 
       await this.adRepository.save({
         ...ad,
@@ -183,12 +184,13 @@ export class AdService {
 
   async isValidRenevalAdBySuscription(user: User) {
     const now = new Date();
+    const isAdminRole = user.roles.includes('SUPER_ADMIN');
     const allowedAds = Number(this.configService.get('COMODOS_FREE_ADS')) ?? 1;
     const activeAds = (await this.findAllAdsByUserId(user.id)).filter(ad => ad.expiredDate > now).length
 
-    return (activeAds <= allowedAds)
-      ? true
-      : false;
+    return ((activeAds <= allowedAds) || isAdminRole)
+      ? {value: true, allowedAds, activeAds}
+      : {value: false, allowedAds, activeAds}
   }
 
   async adsByUserAllowed(user: User) {
