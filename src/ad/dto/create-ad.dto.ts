@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUUID, MaxLength, Min, MinLength, ValidateNested } from "class-validator";
+import { IsBoolean, IsIn, IsInt, IsNumber, IsObject, IsOptional, IsPositive, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateNested } from "class-validator";
 import { AdPeriod } from "src/ad-period/entities/ad-period.entity";
 import { Coords } from "src/common/dto/coords.dto";
 import { PropertyType } from "src/property-type/entities/property-type.entity";
@@ -16,6 +16,15 @@ export class CreateAdDto {
     @MinLength(50, { message: 'EL campo description debe contener al menos 50 caracteres' })
     @MaxLength(1500, { message: 'EL campo description debe ser menor o igual a 1500 caracteres' })
     description: string;
+
+    @IsInt({ message: 'El campo phone es un valor entero' })
+    @IsPositive({ message: 'El campo phone debe ser un valor positivo' })
+    phone: number;
+
+    @IsPositive({ message: 'El campo phone debe ser un valor positivo' })
+    @Max(999, { message: 'El campo phoneCode debe ser menor o igual a 999' })
+    @IsInt({ message: 'El campo phoneCode es un valor entero' })
+    phoneCode: number;
 
     @IsString({ message: 'El campo locationCountry debe ser una cadena de caracteres' })
     @MaxLength(25, { message: 'El campo locationCountry deber menor o igual a 25 caracteres' })
@@ -37,7 +46,7 @@ export class CreateAdDto {
     @ValidateNested()
     @Type(() => Coords)
     coords: Coords
-    
+
     @IsNumber({}, { message: 'El campo price debe ser un numero válido' })
     @IsPositive({ message: 'El campo price debe ser un número positivo' })
     price: number;
@@ -87,7 +96,7 @@ export class CreateAdDto {
 
     @IsOptional()
     @IsNumber({}, { message: 'El campo administrationCost debe ser un numero válido' })
-    @Min(0,{ message: 'El campo administrationCost debe ser un número positivo' })
+    @Min(0, { message: 'El campo administrationCost debe ser un número positivo' })
     administrationCost?: number;
 
     @IsOptional()
@@ -114,10 +123,10 @@ export class CreateAdDto {
     hasInternetServiceIntegrated: boolean;
 
     //user:User viene en la autenticacion
-    
-    @IsUUID('all',{message:'El campo period es requerido y debe ser un UUID valido'})
-    period:AdPeriod;
-    
-    @IsUUID('all',{message:'El campo propertyType es requerido y debe ser un UUID valido'})
-    propertyType:PropertyType
+
+    @IsUUID('all', { message: 'El campo period es requerido y debe ser un UUID valido' })
+    period: AdPeriod;
+
+    @IsUUID('all', { message: 'El campo propertyType es requerido y debe ser un UUID valido' })
+    propertyType: PropertyType
 }

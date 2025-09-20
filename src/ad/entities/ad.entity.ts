@@ -17,6 +17,12 @@ export class Ad {
     @Column({type:'varchar', length:1500}, )
     description:string;
 
+    @Column({type:'bigint', nullable:true})
+    phone:number;
+
+    @Column({name:'phone_code',type:'bigint', nullable:true})
+    phoneCode:number;
+
     @Column({ type:'jsonb'})
     coords:Coords
 
