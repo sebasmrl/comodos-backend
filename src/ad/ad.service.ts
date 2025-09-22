@@ -187,8 +187,9 @@ export class AdService {
     const isAdminRole = user.roles.includes('SUPER_ADMIN');
     const allowedAds = Number(this.configService.get('COMODOS_FREE_ADS')) ?? 1;
     const activeAds = (await this.findAllAdsByUserId(user.id)).filter(ad => ad.expiredDate > now).length
-
-    return ((activeAds <= allowedAds) || isAdminRole)
+    
+    //todo: pendiente a cambio con suscripciones en user.isRealStateCompany
+    return ((activeAds <= allowedAds) || isAdminRole || user.isRealStateCompany) 
       ? {value: true, allowedAds, activeAds}
       : {value: false, allowedAds, activeAds}
   }
