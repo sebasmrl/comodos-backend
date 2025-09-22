@@ -19,18 +19,18 @@ export class S3Service {
         this.s3Client = new S3Client({
             region: configService.get('AWS_BUCKET_REGION'),
             //!no necesarias en ECS 
-            /* credentials: {
+            credentials: {
                 accessKeyId: configService.get('AWS_ACCESS_KEY'),
                 secretAccessKey: configService.get('AWS_SECRET_KEY')
-            } */
+            }
         })
         this.cloudFrontClient = new CloudFrontClient({
             region: 'us-east-1',
             //!no necesarias en ECS
-            /* credentials: {
+            credentials: {
                 accessKeyId: configService.get('AWS_ACCESS_KEY'),
                 secretAccessKey: configService.get('AWS_SECRET_KEY')
-            } */
+            }
         })
     }
 
