@@ -17,6 +17,11 @@ export class CreateAdDto {
     @MaxLength(1500, { message: 'EL campo description debe ser menor o igual a 1500 caracteres' })
     description: string;
 
+    @IsOptional()
+    @IsString({ message: 'El campo type debe ser una cadena de caracteres' })
+    @IsIn(['Arriendo', 'Venta'], { message: (values) => `El campo type no coincide con los valores permitidos: [${values.constraints}]` })
+    type?: string;
+
     @IsInt({ message: 'El campo phone es un valor entero' })
     @IsPositive({ message: 'El campo phone debe ser un valor positivo' })
     phone: number;

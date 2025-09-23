@@ -18,7 +18,6 @@ export class AdController {
     private readonly adService: AdService,
     private readonly userService:UserService,
     private readonly adImageService: AdImageService,
-    private readonly profileImageService:ProfileImageService
   ) { }
 
   @Auth()

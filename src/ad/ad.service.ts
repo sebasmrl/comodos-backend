@@ -32,7 +32,7 @@ export class AdService {
 
 
   async findAll(filter: AdSearchFilterDto) {
-    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period } = filter;
+    const { lat, lng, limit = 10, offset = 0, range = 25, minPrice, maxPrice, propertyType, period, type='Arriendo' } = filter;
 
     try {
       let query = this.adRepository.createQueryBuilder('ad')
@@ -62,7 +62,7 @@ export class AdService {
       )) AS distance`
         ])
 
-
+      query.andWhere('ad.type = :type', { type: type});
       if (minPrice !== undefined) { query.andWhere('ad.price >= :minPrice', { minPrice: minPrice }); }
       if (maxPrice !== undefined) { query.andWhere('ad.price <= :maxPrice', { maxPrice: maxPrice }); }
       if (propertyType !== undefined) { query.andWhere('pt.name = :propertyType', { propertyType: propertyType }) }

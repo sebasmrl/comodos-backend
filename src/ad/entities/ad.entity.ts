@@ -17,6 +17,9 @@ export class Ad {
     @Column({type:'varchar', length:1500}, )
     description:string;
 
+    @Column({ type:'text', enum:['Arriendo', 'Venta'], nullable:false, default:'Arriendo'})
+    type:string;
+
     @Column({type:'bigint'})
     phone:number;
 

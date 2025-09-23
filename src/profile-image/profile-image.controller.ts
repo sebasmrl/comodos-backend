@@ -36,6 +36,7 @@ export class ProfileImageController {
     ) file: Express.Multer.File,
     @Req() req:Request ,
   ) {
+
     const userLogued:User = req['user']
     const profileImage = await  this.profileImageService.createOrUpdate(file, userLogued );
     return profileImage;
