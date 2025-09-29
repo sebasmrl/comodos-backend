@@ -53,8 +53,8 @@ export class AdController {
   @Get('complete/:id')
   async findOneComplete(@Param('id') id: string) {
     const ad  = await this.adService.findOneComplete(id);
-    const {id:userId, names, lastnames, lastConnection, profileImage, phone, phoneCode} = await this.userService.findOneById(ad.user.id);
-    const user = {id:userId, names, lastnames, lastConnection, profileImage, phone, phoneCode};
+    const {id:userId, names, lastnames, lastConnection, profileImage, phone, phoneCode, isRealStateCompany} = await this.userService.findOneById(ad.user.id);
+    const user = {id:userId, names, lastnames, lastConnection, profileImage, phone, phoneCode, isRealStateCompany};
 
     const adWithPublicUserData = {...ad, user:user}
     return adWithPublicUserData;
