@@ -78,7 +78,7 @@ export class Ad {
     carParking:boolean;
 
     @Column({name:'administration_cost', type:'decimal', nullable:true})
-    adminitrationCost:number;
+    administrationCost:number;
 
     @Column({name:'has_kitchen', type:'boolean', default:true})
     hasKitchen:boolean;
